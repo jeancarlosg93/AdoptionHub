@@ -1,5 +1,5 @@
 ﻿.heroBackground {
-    background-image: url("/images/Background (Large).jpg"); /* Replace with your image path */
+    background-image: url("/images/Background.jpg"); /* Replace with your image path */
     background-size: cover; /* Scales image to fill container */
     background-position: center; /* Centers image horizontally and vertically */
     background-repeat: no-repeat; /* Prevents image tiling */
