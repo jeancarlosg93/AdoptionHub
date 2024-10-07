@@ -2,15 +2,8 @@
     background-image: url("/images/Background.jpg"); /* Replace with your image path */
     background-size: cover; /* Scales image to fill container */
     background-position: center; /* Centers image horizontally and vertically */
-    background-repeat: no-repeat; /* Prevents image tiling */
-}
-.fill {
-    min-height: 100%;
-    height: 100%;
-}
-#map {
-    width: 100%;
-    display: block;
+    background-repeat: no-repeat;
+    height: 100vh
 }
 
 :root {
