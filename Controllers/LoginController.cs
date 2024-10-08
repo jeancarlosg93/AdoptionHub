@@ -1,11 +1,12 @@
-﻿using AdoptionHub.Models;
+﻿using System.Diagnostics;
+using AdoptionHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 
 
 namespace AdoptionHub.Controllers;
 
-public class LoginController: Controller
+public class LoginController : Controller
 {
     private readonly string connectionString;
 
@@ -13,6 +14,7 @@ public class LoginController: Controller
     {
         connectionString = configuration.GetConnectionString("DefaultConnection");
     }
+
     public readonly ILogger<LoginController> _logger;
 
     public IActionResult Index()
@@ -31,23 +33,47 @@ public class LoginController: Controller
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
             connection.Open();
-            String query = "SELECT id,firstName from Users where id = 1;";
-            using(MySqlCommand command = new MySqlCommand(query, connection))
+            String query = "SELECT * FROM Users WHERE Username = @Username and Password =@Password";
+
+            using (MySqlCommand command = new MySqlCommand(query, connection))
             {
+                command.Parameters.AddWithValue("@Username", model.Username);
+                command.Parameters.AddWithValue("@Password", model.Password);
+
                 using (MySqlDataReader reader = command.ExecuteReader())
                 {
                     if (reader.Read())
                     {
-                        Console.WriteLine(reader);
+                        String userRole = reader["userRole"].ToString();
+                        HttpContext.Session.SetString("userRole", userRole);
+                        HttpContext.Session.SetString("Username", model.Username);
+                        HttpContext.Session.SetString("IsAuthenticated", "Y");
+
+                        if (userRole.Equals("admin"))
+                        {
+                            return RedirectToAction("Index", "AdminDashboard");
+                        }
+                        else if (userRole.Equals("foster"))
+                        {
+                            return RedirectToAction("Index", "FosterDashboard");
+                        }
+
+                        else
+                            return RedirectToAction("Index", "Home");
                     }
-                    
+                    else
+                    {
+                        model.ErrorMessage = "Your username/password is incorrect";
+                        return View("Index", model);
+                    }
                 }
             }
-
         }
-        return View();
     }
 
-
-
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
 }
