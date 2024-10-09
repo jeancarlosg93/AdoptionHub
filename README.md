@@ -10,4 +10,7 @@ The following features will make up the core functionality of the application:
 ## Setup
 - Clone the repo to your local machine.
 - Add `appsettings.Development.json` as per the template `appsettings.Development.json.example` and add the connection string for your local database.
+- To update Models, ensure you have `dotnet` insalled or install with `dotnet tool install --global dotnet-ef
+`. Then run `dotnet ef dbcontext scaffold "YOUR CONNECTION STRING" Pomelo.EntityFrameworkCore.MySql --output-dir Models --force --context ApplicationDbContext --no-onconfiguring --context-dir Contexts`.
+
  
