@@ -7,4 +7,8 @@ The following features will make up the core functionality of the application:
 - A backend dashboard which allows administrators to add pets and fosters to edit information about the pets. 
 - A front end which displays pets to potential adopters and allows them to contact the foster agency. 
 
+## Setup
+- Clone the repo to your local machine.
+- Rename `appsettings.Development.json.example` to `appsettings.Development.json` and add you the connection string for your local database.
+
  
