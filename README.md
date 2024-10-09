@@ -9,6 +9,5 @@ The following features will make up the core functionality of the application:
 
 ## Setup
 - Clone the repo to your local machine.
-- Rename `appsettings.Development.json.example` to `appsettings.Development.json` and add you the connection string for your local database.
-
+- Add `appsettings.Development.json` as per the template `appsettings.Development.json.example` and add the connection string for your local database.
  
