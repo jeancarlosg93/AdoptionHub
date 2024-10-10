@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 #Environment Variables
 appsettings.Development.json
+appsettings.json
