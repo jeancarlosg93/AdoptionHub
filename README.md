@@ -10,7 +10,19 @@ The following features will make up the core functionality of the application:
 ## Setup
 - Clone the repo to your local machine.
 - Add `appsettings.Development.json` as per the template `appsettings.Development.json.example` and add the connection string for your local database.
-- To update Models, ensure you have `dotnet` insalled or install with `dotnet tool install --global dotnet-ef
-`. Then run `dotnet ef dbcontext scaffold "YOUR CONNECTION STRING" Pomelo.EntityFrameworkCore.MySql --output-dir Models --force --context ApplicationDbContext --no-onconfiguring --context-dir Contexts`.
 
+## Update Models and Database
+
+### To update models from changes made to the database
+
+- Ensure you have `dotnet` insalled or install with `dotnet tool install --global dotnet-ef
+`.
+- Run `dotnet ef dbcontext scaffold "YOUR CONNECTION STRING" Pomelo.EntityFrameworkCore.MySql --output-dir Models --force --context ApplicationDbContext --no-onconfiguring --context-dir Contexts`.
+- Run `Add-Migration delete` to make the Migrations aware of the changes scaffolded from the database.
+- Delete the newly created `detele` migration file so that `Update-Database` won't try to apply the changes that were scafolled from the database.
+
+### To update database from changes made to models
+
+- Run `Add-Migration <migration-name>`
+- Run `Update-Database`
  
