@@ -18,8 +18,8 @@ The following features will make up the core functionality of the application:
 - Ensure you have `dotnet` insalled or install with `dotnet tool install --global dotnet-ef
 `.
 - Run `dotnet ef dbcontext scaffold "YOUR CONNECTION STRING" Pomelo.EntityFrameworkCore.MySql --output-dir Models --force --context ApplicationDbContext --no-onconfiguring --context-dir Contexts`.
-- Run `Add-Migration delete` to make the Migrations aware of the changes scaffolded from the database.
-- Delete the newly created `detele` migration file so that `Update-Database` won't try to apply the changes that were scafolled from the database.
+- Run `Add-Migration delete` to update the ModelSnapshot.cs file.
+- Delete the newly created `delete` migration file so that `Update-Database` won't try to apply the changes that were scaffolded from the database.
 
 ### To update database from changes made to models
 
