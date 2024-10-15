@@ -21,7 +21,7 @@ public class AdminDashboardController : Controller
     public async Task<IActionResult> Index(List<Pet> model)
     {
 
-        model = await _context.Pets.ToListAsync();
+        model = await _context.Pets.Include(p => p.FosterParent).ToListAsync();
         return View(model);
     }
 

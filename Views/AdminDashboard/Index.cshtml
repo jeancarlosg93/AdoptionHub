@@ -8,6 +8,7 @@
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Foster Parent</th>
                 <th>Species</th>
                 <th>Breed</th>
                 <th>Date of Birth</th>
@@ -27,6 +28,7 @@
             {
                 <tr>
                     <td>@pet.Name</td>
+                    <td>@(pet.FosterParent != null ? pet.FosterParent.FirstName + " " + pet.FosterParent.LastName : "Not fostered")</td>
                     <td>@pet.Species</td>
                     <td>@pet.Breed</td>
                     <td>@pet.DateOfBirth?.ToString("yyyy-MM-dd")</td>
