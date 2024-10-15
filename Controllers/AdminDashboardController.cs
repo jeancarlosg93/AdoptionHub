@@ -29,22 +29,51 @@ public class AdminDashboardController : Controller
     public async Task<IActionResult> EditPet(int id)
     {
 
-        Pet model = await _context.Pets.FindAsync(id);
+        PetEditViewModel model = new PetEditViewModel();
+        model.Pet = await _context.Pets.FindAsync(id);
+        model.Users = await _context.Users.ToListAsync();
         return View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult EditPet(Pet pet)
+    public async Task<IActionResult> EditPet(PetEditViewModel model)
     {
-        if (ModelState.IsValid)
+        var pet = await _context.Pets.FindAsync(model.Pet?.Id);
+
+        if (pet != null)
         {
-            _context.Update(pet);
-            _context.SaveChanges();
+            var petType = typeof(Pet);
+            var modelPet = model.Pet;
+
+            foreach (var property in petType.GetProperties())
+            {
+
+                if (property.Name == "Id" || property.Name == "FosterParent")
+                    continue;
+
+                var newValue = property.GetValue(modelPet);
+                var currentValue = property.GetValue(pet);
+
+
+                if (newValue != null && !newValue.Equals(currentValue))
+                {
+                    property.SetValue(pet, newValue);
+                }
+            }
+
+            var fosterParent = await _context.Users.FindAsync(model.Pet?.FosterParent?.Id);
+
+
+            pet.FosterParent = fosterParent;
+
+            await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
-        return View(pet);
+
+        return View(model);
     }
+
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
