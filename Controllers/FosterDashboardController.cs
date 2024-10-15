@@ -21,7 +21,7 @@ public class FosterDashboardController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        // Obtener lista de animales que el usuario fosterea
+        //obtain animal list that the user fosters
 
         model = new List<FosterDashboardViewModel>();
 
@@ -40,10 +40,14 @@ public class FosterDashboardController : Controller
                         string name = reader["name"].ToString();
                         string species = reader["species"].ToString();
 
-                        FosterDashboardViewModel pet = new FosterDashboardViewModel();
-                        pet.Id = id;
-                        pet.Name = name;
-                        pet.Species = species;
+                        var pet = new FosterDashboardViewModel
+                        {
+                            Id = id,
+                            Name = name,
+                            Species = species,
+                            Images = new List<string>()
+                        };
+                        
                         model.Add(pet);
                     }
                 }

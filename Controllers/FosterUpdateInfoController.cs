@@ -15,7 +15,6 @@ namespace AdoptionHub.Controllers
 
         public IActionResult Index(int petId)
         {
-
             FosterUpdateInfoViewModel model = new FosterUpdateInfoViewModel();
             model.ImageUrl = new List<string>();
             model.ApptDate = new List<DateTime>();
@@ -61,7 +60,6 @@ namespace AdoptionHub.Controllers
             return View(model);
         }
 
-
         [HttpPost]
         public IActionResult UpdatePetInfo(FosterUpdateInfoViewModel model, IFormFile newImage)
         {
@@ -69,7 +67,7 @@ namespace AdoptionHub.Controllers
             {
                 connection.Open();
 
-                // Update pet bio in the database
+                //update pet bio in the database
                 string updateSql = "UPDATE Pets SET bio = @bio WHERE id = @petId";
                 using (MySqlCommand command = new MySqlCommand(updateSql, connection))
                 {
@@ -78,29 +76,27 @@ namespace AdoptionHub.Controllers
                     command.ExecuteNonQuery();
                 }
 
-                // Handle image upload
+                //image
                 if (newImage != null && newImage.Length > 0)
                 {
-                    var filePath = Path.Combine("wwwroot/images", newImage.FileName); // Define the path for the image
+                    var filePath = Path.Combine("wwwroot/images", newImage.FileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        newImage.CopyTo(stream); // Save the uploaded file
+                        newImage.CopyTo(stream); //save uploaded file
                     }
 
-                    // Insert the new image into the database
+                    //insert new image into the database
                     string insertImageSql = "INSERT INTO PetImages (PetId, ImageUrl) VALUES (@petId, @imageUrl)";
                     using (MySqlCommand command = new MySqlCommand(insertImageSql, connection))
                     {
                         command.Parameters.AddWithValue("@petId", model.Id);
-                        command.Parameters.AddWithValue("@imageUrl", $"/images/{newImage.FileName}"); // Store the path in the database
+                        command.Parameters.AddWithValue("@imageUrl", $"/images/{newImage.FileName}");
                         command.ExecuteNonQuery();
                     }
                 }
             }
-
-            // Redirect back to the same page
+            //redirect back to the same page
             return RedirectToAction("Index", new { petId = model.Id });
         }
     }
-
 }

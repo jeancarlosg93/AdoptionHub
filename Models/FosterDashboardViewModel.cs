@@ -7,5 +7,6 @@ namespace AdoptionHub.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Species { get; set; }
+        public List<string> Images { get; set; }
     }
 }
