@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AdoptionHub.Models;
+﻿namespace AdoptionHub.Models;
 
 public partial class Pet
 {
@@ -30,6 +27,7 @@ public partial class Pet
     public string Status { get; set; } = null!;
 
     public decimal? AdoptionFee { get; set; }
+    public User? FosterParent { get; set; }
 
     public virtual ICollection<Adoptionapplication> Adoptionapplications { get; set; } = new List<Adoptionapplication>();
 
