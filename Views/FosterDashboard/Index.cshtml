@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Dashboard</title>
+    <title>Foster Dashboard</title>
     <style>
         /* Dashboard container to hold the content */
         .dashboard-container {
@@ -78,7 +78,7 @@
                     <div class="pet-id">Pet ID: @pet.Id</div>
                     <div class="pet-name">Pet Name: @pet.Name</div>
                     <div class="pet-species">Description: @pet.Species</div>
-                    <a class="pet-btn" href="#">Update Info</a>
+                    <a class="pet-btn" href="@Url.Action("Index", "FosterUpdateInfo", new { petId = pet.Id })">Update Info</a>
                 </div>
             }
         </div>

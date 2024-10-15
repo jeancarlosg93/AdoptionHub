@@ -3,7 +3,6 @@ using AdoptionHub.Contexts;
 using AdoptionHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
-//using MySqlConnector;
 
 namespace AdoptionHub.Controllers;
 public class FosterDashboardController : Controller

@@ -1,0 +1,70 @@
+﻿@model FosterUpdateInfoViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Pet Info</title>
+</head>
+<body>
+    <div>
+        <h1>Update Information for @Model.Name</h1>
+
+        <form asp-action="UpdatePetInfo" method="post" enctype="multipart/form-data">
+            <h3>Bio:</h3>
+            <textarea name="Bio" placeholder="Update bio here...">@Model.Bio</textarea>
+
+            <h3>Upload Image:</h3>
+            <input type="file" name="newImage" accept="image/*" />
+
+            <h3>Appointments:</h3>
+            <p>Dates:</p>
+            <ul>
+                @foreach (var date in Model.ApptDate)
+                {
+                    <li>@date.ToString("yyyy-MM-dd")</li>
+                }
+            </ul>
+            <p>Reasons:</p>
+            <ul>
+                @foreach (var reason in Model.ApptReason)
+                {
+                    <li>@reason</li>
+                }
+            </ul>
+
+            <button type="submit">Update</button>
+        </form>
+
+        <h3>Images:</h3>
+        <div>
+            @foreach (var imageUrl in Model.ImageUrl)
+            {
+                <img src="@imageUrl" alt="Pet Image" style="width: 200px; height: auto; margin: 10px;" />
+            }
+        </div>
+
+
+
+@*         <h1>Update Information for @Model.Name</h1>
+
+        <h3>Bio:</h3>
+        <p>@Model.Bio</p>
+
+
+        <h3>Appointments:</h3>
+       @*  <p>Date: @Model.ApptDate?.ToString("yyyy-MM-dd")</p> *@
+     @*    <p>Reason: @Model.ApptReason</p>
+
+        <h3>Images:</h3>
+        <div>
+            @foreach (var imageUrl in Model.ImageUrl)
+            {
+                <img src="@imageUrl" alt="Pet Image" style="width: 200px; height: auto; margin: 10px;" />
+            }
+        </div> *@
+    </div>
+</body>
+</html>
+
