@@ -36,6 +36,10 @@ public class AdminDashboardController : Controller
 
         PetEditViewModel model = new PetEditViewModel();
         model.Pet = await _context.Pets.FindAsync(id);
+        if (model.Pet == null)
+        {
+            model.Pet = new Pet();
+        }
         model.Users = await _context.Users.ToListAsync();
         return View(model);
     }
@@ -74,6 +78,17 @@ public class AdminDashboardController : Controller
 
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+        else if (model.Pet != null)
+        {
+            var fosterParent = await _context.Users.FindAsync(model.Pet?.FosterParent?.Id);
+
+
+            model.Pet.FosterParent = fosterParent;
+            await _context.Pets.AddAsync(model.Pet);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+
         }
 
         return View(model);
