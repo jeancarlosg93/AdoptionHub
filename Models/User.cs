@@ -1,4 +1,7 @@
-﻿namespace AdoptionHub.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace AdoptionHub.Models;
 
 public partial class User
 {
@@ -28,5 +31,5 @@ public partial class User
 
     public virtual ICollection<Fosterassignment> Fosterassignments { get; set; } = new List<Fosterassignment>();
 
-    public string FullName => $"{FirstName} {LastName}";
+    public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();
 }
