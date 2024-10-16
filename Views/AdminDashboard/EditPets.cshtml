@@ -1,0 +1,50 @@
+﻿@model List<Pet>
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Welcome to Admin Dashboard</p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Foster Parent</th>
+                <th>Species</th>
+                <th>Breed</th>
+                <th>Date of Birth</th>
+                <th>Gender</th>
+                <th>Weight (kg)</th>
+                <th>Color</th>
+                <th>Temperament</th>
+                <th>Date Arrived</th>
+                <th>Bio</th>
+                <th>Status</th>
+                <th>Adoption Fee</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pet in Model)
+            {
+                <tr>
+                    <td>@pet.Name</td>
+                    <td>@(pet.FosterParent != null ? pet.FosterParent.FirstName + " " + pet.FosterParent.LastName : "Not fostered")</td>
+                    <td>@pet.Species</td>
+                    <td>@pet.Breed</td>
+                    <td>@pet.DateOfBirth?.ToString("yyyy-MM-dd")</td>
+                    <td>@pet.Gender</td>
+                    <td>@pet.Weight</td>
+                    <td>@pet.Color</td>
+                    <td>@pet.Temperament</td>
+                    <td>@pet.DateArrived?.ToString("yyyy-MM-dd")</td>
+                    <td>@pet.Bio</td>
+                    <td>@pet.Status</td>
+                    <td>@pet.AdoptionFee?.ToString("C")</td>
+                    <td>
+                        <a href="@Url.Action("EditPet", "AdminDashboard", new { id = pet.Id })" class="btn btn-primary">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

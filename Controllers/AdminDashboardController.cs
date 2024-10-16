@@ -18,7 +18,12 @@ public class AdminDashboardController : Controller
 
     public readonly ILogger<LoginController> _logger;
 
-    public async Task<IActionResult> Index(List<Pet> model)
+    public ActionResult Index()
+    {
+        return View();
+    }
+
+    public async Task<IActionResult> EditPets(List<Pet> model)
     {
 
         model = await _context.Pets.Include(p => p.FosterParent).ToListAsync();
