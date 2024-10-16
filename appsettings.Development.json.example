@@ -6,6 +6,6 @@
     }
   },
   "ConnectionStrings": {
-    "DefaultConnection": "YOUR CONNECTION STRING HERE"
+    "DefaultConnection": "server=localhost;port=3306;Database=AdoptionHubDB;User=root;password=soda123;"
   }
 }

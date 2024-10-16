@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Dashboard</title>
+    <title>Foster Dashboard</title>
     <style>
         /* Dashboard container to hold the content */
         .dashboard-container {
@@ -63,6 +63,7 @@
 
             .pet-btn:hover {
                 background-color: #0056b3;
+                color: white;
             }
     </style>
 </head>
@@ -75,10 +76,21 @@
             @foreach (var pet in Model)
             {
                 <div class="pet-card">
+                    @* <div>
+                        @if (pet.Images != null && pet.Images.Any())
+                        {
+                            @foreach (var imageUrl in pet.Images) {
+                                <img src="@imageUrl" alt="Pet Image" style="width: 200px; height: auto; margin: 10px;" />
+                            }
+                        }
+                        else {
+                            <p>No images available for this pet.</p>
+                        }
+                    </div> *@
                     <div class="pet-id">Pet ID: @pet.Id</div>
                     <div class="pet-name">Pet Name: @pet.Name</div>
                     <div class="pet-species">Description: @pet.Species</div>
-                    <a class="pet-btn" href="#">Update Info</a>
+                    <a class="pet-btn" href="@Url.Action("Index", "FosterUpdateInfo", new { petId = pet.Id })">Update Info</a>
                 </div>
             }
         </div>
