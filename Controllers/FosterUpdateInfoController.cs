@@ -24,7 +24,7 @@ namespace AdoptionHub.Controllers
 
             var pet = _context.Pets
                 .Where(p => p.Id == petId)
-                .Include(p => p.VetAppointments)
+                .Include(p => p.Vetappointments)
                 .Include(p => p.PetImages)
                 .FirstOrDefault();
 

@@ -28,7 +28,7 @@ public class FosterDashboardController : Controller
 
         // Query the database to get the list of pets fostered by the current user
         var fosteredPets = (from p in _context.Pets
-                            join fa in _context.FosterAssignments on p.Id equals fa.PetId
+                            join fa in _context.Fosterassignments on p.Id equals fa.PetId
                             join u in _context.Users on fa.FosterId equals u.Id
                             where u.Username == username
                             select new FosterDashboardViewModel
@@ -36,7 +36,7 @@ public class FosterDashboardController : Controller
                                 Id = p.Id,
                                 Name = p.Name,
                                 Species = p.Species,
-                                Images = _context.PetImages
+                                Images = _context.Petimages
                                                 .Where(pi => pi.PetId == p.Id)
                                                 .Select(pi => pi.ImageUrl).ToList()
                             }).ToList();
