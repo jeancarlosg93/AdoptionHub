@@ -95,8 +95,8 @@ namespace AdoptionHub.Controllers
                     }
                 }
             }
-            //redirect back to the same page
-            return RedirectToAction("Index", new { petId = model.Id });
+            //redirect back to foster dashboard
+            return RedirectToAction("Index", "FosterDashboard");
         }
     }
 }
