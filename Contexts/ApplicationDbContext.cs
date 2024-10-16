@@ -273,6 +273,12 @@ public partial class ApplicationDbContext : DbContext
 
             entity.ToTable("vetappointments");
 
+            entity.HasIndex(e => e.FosterId, "FK_VetAppointments_FosterId");
+
+            entity.HasIndex(e => e.PetId, "FK_VetAppointments_PetId");
+
+            entity.HasIndex(e => e.VetId, "FK_VetAppointments_VetId");
+
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ApptDate).HasColumnName("apptDate");
             entity.Property(e => e.ApptReason)
@@ -282,6 +288,18 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.IsFostered).HasColumnName("isFostered");
             entity.Property(e => e.PetId).HasColumnName("petId");
             entity.Property(e => e.VetId).HasColumnName("vetId");
+
+            entity.HasOne(d => d.Foster).WithMany(p => p.Vetappointments)
+                .HasForeignKey(d => d.FosterId)
+                .HasConstraintName("FK_VetAppointments_FosterId");
+
+            entity.HasOne(d => d.Pet).WithMany(p => p.Vetappointments)
+                .HasForeignKey(d => d.PetId)
+                .HasConstraintName("FK_VetAppointments_PetId");
+
+            entity.HasOne(d => d.Vet).WithMany(p => p.Vetappointments)
+                .HasForeignKey(d => d.VetId)
+                .HasConstraintName("FK_VetAppointments_VetId");
         });
 
         modelBuilder.Entity<Veterinarian>(entity =>

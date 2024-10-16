@@ -18,4 +18,10 @@ public partial class Vetappointment
     public DateOnly? ApptDate { get; set; }
 
     public string? ApptReason { get; set; }
+
+    public virtual User? Foster { get; set; }
+
+    public virtual Pet? Pet { get; set; }
+
+    public virtual Veterinarian? Vet { get; set; }
 }

@@ -25,7 +25,7 @@ namespace AdoptionHub.Controllers
             var pet = _context.Pets
                 .Where(p => p.Id == petId)
                 .Include(p => p.Vetappointments)
-                .Include(p => p.PetImages)
+                .Include(p => p.Petimages)
                 .FirstOrDefault();
 
             if (pet != null)
@@ -34,13 +34,13 @@ namespace AdoptionHub.Controllers
                 model.Name = pet.Name;
                 model.Bio = pet.Bio;
 
-                foreach (var appointment in pet.VetAppointments)
+                foreach (var appointment in pet.Vetappointments)
                 {
                     model.ApptDate.Add(appointment.ApptDate);
                     model.ApptReason.Add(appointment.ApptReason);
                 }
 
-                foreach (var image in pet.PetImages)
+                foreach (var image in pet.Petimages)
                 {
                     model.ImageUrl.Add(image.ImageUrl);
                 }
@@ -71,12 +71,12 @@ namespace AdoptionHub.Controllers
                     }
 
                     // Save image info to database
-                    var petImage = new PetImage
+                    var petImage = new Petimage
                     {
                         PetId = pet.Id,
                         ImageUrl = $"/images/{newImage.FileName}"
                     };
-                    _context.PetImages.Add(petImage);
+                    _context.Petimages.Add(petImage);
                     _context.SaveChanges();
                 }
             }

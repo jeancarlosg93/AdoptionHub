@@ -44,4 +44,6 @@ public partial class Pet
     public virtual ICollection<Medicalrecord> Medicalrecords { get; set; } = new List<Medicalrecord>();
 
     public virtual ICollection<Petimage> Petimages { get; set; } = new List<Petimage>();
+
+    public virtual ICollection<Vetappointment> Vetappointments { get; set; } = new List<Vetappointment>();
 }
