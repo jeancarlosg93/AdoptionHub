@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AdoptionHub.Models;
+﻿namespace AdoptionHub.Models;
 
 public partial class User
 {
@@ -34,4 +31,6 @@ public partial class User
     public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();
 
     public virtual ICollection<Vetappointment> Vetappointments { get; set; } = new List<Vetappointment>();
+
+    public string FullName => $"{FirstName} {LastName}".Trim();
 }
