@@ -19,7 +19,7 @@ namespace AdoptionHub.Controllers
         {
             FosterUpdateInfoViewModel model = new FosterUpdateInfoViewModel();
             model.ImageUrl = new List<string>();
-            model.ApptDate = new List<DateTime>();
+            model.ApptDate = new List<DateTime?>();
             model.ApptReason = new List<string>();
 
             var pet = _context.Pets

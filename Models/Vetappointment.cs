@@ -15,7 +15,7 @@ public partial class Vetappointment
 
     public int? FosterId { get; set; }
 
-    public DateOnly? ApptDate { get; set; }
+    public DateTime? ApptDate { get; set; }
 
     public string? ApptReason { get; set; }
 

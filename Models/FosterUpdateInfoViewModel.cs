@@ -6,7 +6,7 @@
         public string Name { get; set; }
         public string Bio { get; set; }
         public List<string> ImageUrl { get; set; }
-        public List<DateOnly?> ApptDate { get; set; }
+        public List<DateTime?> ApptDate { get; set; }
         public List<string> ApptReason { get; set; }
     }
 }

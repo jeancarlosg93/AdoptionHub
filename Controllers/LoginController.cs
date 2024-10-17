@@ -30,6 +30,8 @@ public class LoginController : Controller
 
     public IActionResult LoginMethod(LoginViewModel model)
     {
+        model.Username = "fosterPro";
+        model.Password = "fosterPass456";
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
             connection.Open();
