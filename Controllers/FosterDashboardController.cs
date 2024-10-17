@@ -24,7 +24,7 @@ public class FosterDashboardController : Controller
         }
 
         // Get the current username from the session
-        var username = HttpContext.Session.GetString("Username");
+        var username = HttpContext.Session.GetString("userName");
 
         // Query the database to get the list of pets fostered by the current user
         var fosteredPets = (from p in _context.Pets
