@@ -16,4 +16,6 @@ public partial class Veterinarian
     public string? PhoneNumber { get; set; }
 
     public virtual ICollection<Medicalrecord> Medicalrecords { get; set; } = new List<Medicalrecord>();
+
+    public virtual ICollection<Vetappointment> Vetappointments { get; set; } = new List<Vetappointment>();
 }
