@@ -29,6 +29,12 @@ public class AdminDashboardController : Controller
         model = await _context.Pets.Include(p => p.FosterParent).ToListAsync();
         return View(model);
     }
+    public async Task<IActionResult> EditUsers(List<User> model)
+    {
+
+        model = await _context.Users.ToListAsync();
+        return View(model);
+    }
 
     [HttpGet]
     public async Task<IActionResult> EditPet(int id)
