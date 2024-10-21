@@ -12,7 +12,7 @@
         @foreach (var pet in Model)
 
         {
-            <div class="col-auto m-2">
+            <div class="col-auto m-2 mb-2">
                 <div class="hvr-grow card pet-card shadow-sm" style="width: 18rem;">
                     <img src="/images/exampleImg/dog@(new Random().Next(1, 8)).jpg"
                          class="card-img-top" alt="...">
@@ -22,9 +22,9 @@
                     </div>
 
                     <ul class="list-group list-group-flush ">
-                        <li class="list-group-item">@pet.Gender</li>
+                        <li class="list-group-item">Gender: @pet.Gender</li>
                         <li class="list-group-item"> Age: @pet.Age</li>
-                        <li class="list-group-item">@pet.Temperament</li>
+                        <li class="list-group-item">Temperament: @pet.Temperament</li>
                     </ul>
                     <div class="card-body d-flex justify-content-center">
                         <a href="@Url.Action("Details", "Home",new {id = pet.Id})" class="btn btn-outline-dark">View more details</a>
