@@ -110,7 +110,8 @@
                     <ul>
                         @foreach (var date in Model.ApptDate)
                         {
-                            <li>Date: @date.ToString("yyyy-MM-dd")</li>
+                            //check this line
+                            <li>Date: @date?.ToString("yyyy-MM-dd")</li>
                         }
                     </ul>
                     <ul>

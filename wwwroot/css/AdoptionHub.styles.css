@@ -1,8 +1,11 @@
 ﻿.heroBackground {
-    background-image: url("/images/Background.jpg"); /* Replace with your image path */
-    background-size: cover; /* Scales image to fill container */
-    background-position: center; /* Centers image horizontally and vertically */
+    background-image: url("/images/Background.jpg");
+    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 100vh
 }
 
@@ -12,4 +15,56 @@
 }
 @supports (font-variation-settings: normal) {
     :root { font-family: InterVariable, sans-serif; }
+}
+
+
+@media (max-width: 576px) {
+    .svg-logo {
+        width: 24px;
+        height: 24px;
+    }
+    .navbar-nav .nav-link {
+        font-size: 1rem;
+    }
+    .navbar .btn {
+        margin-top: 0.5rem;
+    }
+}
+
+.navbar-brand, .navbar .btn {
+    margin-left: 1rem; /* Adjust this value for consistent left margin */
+}
+
+.pet-card:hover{
+    
+}
+
+/* Margin for larger screen sizes */
+@media (min-width: 768px) {
+    .navbar-brand, .navbar .btn {
+        margin-left: 2rem; /* Adjust this value for larger screens */
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar-brand, .navbar .btn {
+        margin-left: 3rem; /* Adjust this value for even larger screens */
+    }
+
+    .hvr-grow {
+        display: inline-block;
+        vertical-align: middle;
+        transform: translateZ(0);
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+        backface-visibility: hidden;
+        -moz-osx-font-smoothing: grayscale;
+        transition-duration: 0.2s;
+        transition-property: transform;
+    }
+
+    .hvr-grow:hover,
+    .hvr-grow:focus,
+    .hvr-grow:active {
+        transform: scale(1.05);
+    }
 }

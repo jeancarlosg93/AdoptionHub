@@ -15,7 +15,7 @@ public partial class Medicalrecord
 
     public bool? IsNeutered { get; set; }
 
-    public DateOnly? VisitDate { get; set; }
+    public DateTime VisitDate { get; set; }
 
     public string? VisitDescription { get; set; }
 

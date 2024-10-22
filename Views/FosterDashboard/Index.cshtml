@@ -70,7 +70,7 @@
 <body>
 
     <div class="dashboard-container">
-        <h1 class="text-center">Welcome to Foster Dashboard, @Context.Session.GetString("Username")</h1>
+        <h1 class="text-center">Welcome to Foster Dashboard, @Context.Session.GetString("userName")</h1>
 
         <div class="fostered-pets">
             @foreach (var pet in Model)

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using AdoptionHub.Contexts;
 using AdoptionHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
@@ -8,11 +9,11 @@ namespace AdoptionHub.Controllers;
 
 public class LoginController : Controller
 {
-    private readonly string connectionString;
+    private readonly ApplicationDbContext _context;
 
-    public LoginController(IConfiguration configuration)
+    public LoginController(ApplicationDbContext context)
     {
-        connectionString = configuration.GetConnectionString("DefaultConnection");
+        _context = context;
     }
 
     public readonly ILogger<LoginController> _logger;
@@ -30,44 +31,32 @@ public class LoginController : Controller
 
     public IActionResult LoginMethod(LoginViewModel model)
     {
-        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        var user = _context.Users.FirstOrDefault(u => u.Username == model.Username && u.Password == model.Password);
+
+        if (user != null)
         {
-            connection.Open();
-            String query = "SELECT * FROM Users WHERE Username = @Username and Password =@Password";
+            HttpContext.Session.SetString("userName", user.Username);
+            HttpContext.Session.SetString("userRole", user.UserRole);
+            HttpContext.Session.SetString("IsAuthenticated", "Y");
 
-            using (MySqlCommand command = new MySqlCommand(query, connection))
+            if (user.UserRole == "admin")
             {
-                command.Parameters.AddWithValue("@Username", model.Username);
-                command.Parameters.AddWithValue("@Password", model.Password);
-
-                using (MySqlDataReader reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        String userRole = reader["userRole"].ToString();
-                        HttpContext.Session.SetString("userRole", userRole);
-                        HttpContext.Session.SetString("Username", model.Username);
-                        HttpContext.Session.SetString("IsAuthenticated", "Y");
-
-                        if (userRole.Equals("admin"))
-                        {
-                            return RedirectToAction("Index", "AdminDashboard");
-                        }
-                        else if (userRole.Equals("foster"))
-                        {
-                            return RedirectToAction("Index", "FosterDashboard");
-                        }
-
-                        else
-                            return RedirectToAction("Index", "Home");
-                    }
-                    else
-                    {
-                        model.ErrorMessage = "Your username/password is incorrect";
-                        return View("Index", model);
-                    }
-                }
+                return RedirectToAction("Index", "AdminDashboard");
             }
+
+            if (user.UserRole == "foster")
+            {
+                return RedirectToAction("Index", "FosterDashboard");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+        else
+        {
+            model.ErrorMessage = "Your username/password is incorrect";
+            return View("Index", model);
         }
     }
 

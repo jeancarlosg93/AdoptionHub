@@ -1,11 +1,12 @@
-﻿using AdoptionHub.Models;
+﻿using System;
+using System.Collections.Generic;
+using AdoptionHub.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdoptionHub.Contexts;
 
 public partial class ApplicationDbContext : DbContext
 {
-
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
@@ -15,16 +16,21 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Appointment> Appointments { get; set; }
 
+    public virtual DbSet<Efmigrationshistory> Efmigrationshistories { get; set; }
+
     public virtual DbSet<Fosterassignment> Fosterassignments { get; set; }
 
     public virtual DbSet<Medicalrecord> Medicalrecords { get; set; }
 
     public virtual DbSet<Pet> Pets { get; set; }
 
+    public virtual DbSet<Petimage> Petimages { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
-    public virtual DbSet<Veterinarian> Veterinarians { get; set; }
+    public virtual DbSet<Vetappointment> Vetappointments { get; set; }
 
+    public virtual DbSet<Veterinarian> Veterinarians { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -90,6 +96,16 @@ public partial class ApplicationDbContext : DbContext
             entity.HasOne(d => d.Pet).WithMany(p => p.Appointments)
                 .HasForeignKey(d => d.PetId)
                 .HasConstraintName("Appointments_ibfk_3");
+        });
+
+        modelBuilder.Entity<Efmigrationshistory>(entity =>
+        {
+            entity.HasKey(e => e.MigrationId).HasName("PRIMARY");
+
+            entity.ToTable("__efmigrationshistory");
+
+            entity.Property(e => e.MigrationId).HasMaxLength(150);
+            entity.Property(e => e.ProductVersion).HasMaxLength(32);
         });
 
         modelBuilder.Entity<Fosterassignment>(entity =>
@@ -158,6 +174,8 @@ public partial class ApplicationDbContext : DbContext
 
             entity.ToTable("pets");
 
+            entity.HasIndex(e => e.FosterParentId, "IX_pets_FosterParentId");
+
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AdoptionFee)
                 .HasPrecision(10, 2)
@@ -190,6 +208,28 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(30)
                 .HasColumnName("temperament");
             entity.Property(e => e.Weight).HasColumnName("weight");
+
+            entity.HasOne(d => d.FosterParent).WithMany(p => p.Pets).HasForeignKey(d => d.FosterParentId);
+        });
+
+        modelBuilder.Entity<Petimage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("petimages");
+
+            entity.HasIndex(e => e.PetId, "petId");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(255)
+                .HasColumnName("imageUrl");
+            entity.Property(e => e.PetId).HasColumnName("petId");
+
+            entity.HasOne(d => d.Pet).WithMany(p => p.Petimages)
+                .HasForeignKey(d => d.PetId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("petimages_ibfk_1");
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -225,6 +265,41 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Username)
                 .HasMaxLength(50)
                 .HasColumnName("username");
+        });
+
+        modelBuilder.Entity<Vetappointment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("vetappointments");
+
+            entity.HasIndex(e => e.FosterId, "FK_VetAppointments_FosterId");
+
+            entity.HasIndex(e => e.PetId, "FK_VetAppointments_PetId");
+
+            entity.HasIndex(e => e.VetId, "FK_VetAppointments_VetId");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ApptDate).HasColumnName("apptDate");
+            entity.Property(e => e.ApptReason)
+                .HasMaxLength(200)
+                .HasColumnName("apptReason");
+            entity.Property(e => e.FosterId).HasColumnName("fosterId");
+            entity.Property(e => e.IsFostered).HasColumnName("isFostered");
+            entity.Property(e => e.PetId).HasColumnName("petId");
+            entity.Property(e => e.VetId).HasColumnName("vetId");
+
+            entity.HasOne(d => d.Foster).WithMany(p => p.Vetappointments)
+                .HasForeignKey(d => d.FosterId)
+                .HasConstraintName("FK_VetAppointments_FosterId");
+
+            entity.HasOne(d => d.Pet).WithMany(p => p.Vetappointments)
+                .HasForeignKey(d => d.PetId)
+                .HasConstraintName("FK_VetAppointments_PetId");
+
+            entity.HasOne(d => d.Vet).WithMany(p => p.Vetappointments)
+                .HasForeignKey(d => d.VetId)
+                .HasConstraintName("FK_VetAppointments_VetId");
         });
 
         modelBuilder.Entity<Veterinarian>(entity =>
