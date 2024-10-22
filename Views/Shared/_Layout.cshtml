@@ -64,9 +64,14 @@
                         <a class="nav-link fs-5" asp-area="" asp-controller="Home" asp-action="Privacy">Contact Us</a>
                     </li>
                 </ul>
+            @if (string.IsNullOrEmpty(ViewContext.HttpContext.Session.GetString("IsAuthenticated"))){
                 <div class="text-end me-4 pe-2">
                     <a class="btn btn-primary" asp-area="" asp-controller="Login" asp-action="Index">Login</a>
                 </div>
+            } else{
+                <div class="text-end me-4 pe-2">
+                    <a class="btn btn-danger" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
+                </div>}
             </div>
     </header>
 
