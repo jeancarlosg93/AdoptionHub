@@ -33,5 +33,31 @@
             }
         </tbody>
     </table>
-    <a href="@Url.Action("EditUser", "AdminDashboard", new { id = 0 })" class="btn btn-primary">New User</a>
+    <h2>Generate a New Signup Code</h2>
+
+    <form id="signupCodeForm">
+        <button type="button" onclick="generateCode()">Generate Signup Code</button>
+    </form>
+
+    <p id="codeResult"></p>
+
+    
 </div>
+
+@section Scripts {
+    <script>
+        function generateCode() {
+            fetch('/admindashboard/generatesignupcode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('codeResult').innerText = 'Generated Code: ' + data.code;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+}

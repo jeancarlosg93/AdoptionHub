@@ -1,4 +1,5 @@
 using AdoptionHub.Contexts;
+using AdoptionHub.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         new MySqlServerVersion(new Version(8, 0, 21))));
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<SignupCodeService>();
 
 builder.Services.AddSession(options =>
 {

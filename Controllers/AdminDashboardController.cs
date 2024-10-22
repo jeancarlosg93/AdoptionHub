@@ -1,5 +1,6 @@
 ﻿using AdoptionHub.Contexts;
 using AdoptionHub.Models;
+using AdoptionHub.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -10,10 +11,12 @@ namespace AdoptionHub.Controllers;
 public class AdminDashboardController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly SignupCodeService _signupCodeService;
 
-    public AdminDashboardController(ApplicationDbContext context)
+    public AdminDashboardController(ApplicationDbContext context, SignupCodeService signupCodeService)
     {
         _context = context;
+        _signupCodeService = signupCodeService;
     }
 
     public readonly ILogger<LoginController> _logger;
@@ -98,6 +101,14 @@ public class AdminDashboardController : Controller
         }
 
         return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult GenerateSignupCode()
+    {
+        string newCode = _signupCodeService.GenerateSignupCode();
+
+        return Json(new { code = newCode });
     }
 
 
