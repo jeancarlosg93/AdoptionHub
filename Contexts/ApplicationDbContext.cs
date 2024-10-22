@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using AdoptionHub.Models;
+﻿using AdoptionHub.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdoptionHub.Contexts;
@@ -31,6 +29,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Vetappointment> Vetappointments { get; set; }
 
     public virtual DbSet<Veterinarian> Veterinarians { get; set; }
+    public virtual DbSet<SignupCode> SignupCodes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
