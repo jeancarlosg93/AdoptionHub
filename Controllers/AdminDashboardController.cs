@@ -19,7 +19,7 @@ public class AdminDashboardController : Controller
         _signupCodeService = signupCodeService;
     }
 
-    public readonly ILogger<LoginController> _logger;
+    public readonly ILogger<HomeController> _logger;
 
     public ActionResult Index()
     {
@@ -51,6 +51,12 @@ public class AdminDashboardController : Controller
         }
         model.Users = await _context.Users.ToListAsync();
         return View(model);
+    }
+
+    public IActionResult DownloadReport(List<Pet> model)
+    {
+        model = await _context.Pets.Include(p => p.FosterParent).ToListAsync();
+        
     }
 
     [HttpPost]

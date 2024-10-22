@@ -26,7 +26,7 @@ public class LoginController : Controller
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();
-        return View("Index");
+        return RedirectToAction("Index", "Home");
     }
 
     public IActionResult LoginMethod(LoginViewModel model)
@@ -48,16 +48,14 @@ public class LoginController : Controller
             {
                 return RedirectToAction("Index", "FosterDashboard");
             }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
         }
         else
         {
             model.ErrorMessage = "Your username/password is incorrect";
-            return View("Index", model);
+            return View("Index",model);
         }
+
+        return View("Index",model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
