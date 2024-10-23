@@ -12,6 +12,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<SignupCodeService>();
+builder.Services.AddScoped<LogInLogService>();
 
 builder.Services.AddSession(options =>
 {

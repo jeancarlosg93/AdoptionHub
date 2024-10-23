@@ -4,6 +4,7 @@ using AdoptionHub.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Text;
 
 
 namespace AdoptionHub.Controllers;
@@ -19,7 +20,7 @@ public class AdminDashboardController : Controller
         _signupCodeService = signupCodeService;
     }
 
-    public readonly ILogger<LoginController> _logger;
+    public readonly ILogger<HomeController> _logger;
 
     public ActionResult Index()
     {
@@ -28,13 +29,12 @@ public class AdminDashboardController : Controller
 
     public async Task<IActionResult> EditPets(List<Pet> model)
     {
-
         model = await _context.Pets.Include(p => p.FosterParent).Include(p => p.Details).ToListAsync();
         return View(model);
     }
+
     public async Task<IActionResult> EditUsers(List<User> model)
     {
-
         model = await _context.Users.ToListAsync();
         return View(model);
     }
@@ -42,15 +42,40 @@ public class AdminDashboardController : Controller
     [HttpGet]
     public async Task<IActionResult> EditPet(int id)
     {
-
         PetEditViewModel model = new PetEditViewModel();
         model.Pet = await _context.Pets.Include(p => p.Details).Where(p => p.Id == id).FirstAsync();
         if (model.Pet == null)
         {
             model.Pet = new Pet();
         }
+
         model.Users = await _context.Users.ToListAsync();
         return View(model);
+    }
+
+    public async Task<IActionResult> DownloadReport(List<Pet> model)
+    {
+        model = await _context.Pets.Include(p => p.FosterParent).ToListAsync();
+        StringBuilder csv = new StringBuilder();
+        csv.AppendLine("ID,Name,FosterParent,Species,Breed,DateOfBirth,Gender,Weight,Color,Temperament,DateArrived,Bio,Status,AdoptionFee");
+        foreach (var pet in model)
+        { 
+            String FosterParent;
+            if (pet.FosterParent == null)
+            {
+                FosterParent = "None";
+            }
+            else
+            {
+                FosterParent = pet.FosterParent.FullName;
+            }
+                
+            csv.AppendLine($"{pet.Id},{pet.Name},{FosterParent},{pet.Species},{pet.Breed},{pet.DateOfBirth},{pet
+                .Gender},{pet.Weight},{pet.Color},{pet.Temperament},{pet.DateArrived},{pet.Bio},{pet.Status},{pet.AdoptionFee}");
+        }
+        String date = DateTime.Now.ToString("yyyyMMddHHmm");
+      
+        return File(Encoding.UTF8.GetBytes(csv.ToString()),"text/csv",$"ListOfPets{date}.csv");
     }
 
     [HttpPost]
@@ -66,7 +91,6 @@ public class AdminDashboardController : Controller
 
             foreach (var property in petType.GetProperties())
             {
-
                 if (property.Name == "Id" || property.Name == "FosterParent")
                     continue;
 
@@ -97,7 +121,6 @@ public class AdminDashboardController : Controller
             await _context.Pets.AddAsync(model.Pet);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
-
         }
 
         return View(model);
