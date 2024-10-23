@@ -70,8 +70,8 @@ public class AdminDashboardController : Controller
                 FosterParent = pet.FosterParent.FullName;
             }
                 
-            csv.AppendLine($"{pet.Id},{pet.Name},{FosterParent},{pet.Species},{pet.Breed},{pet.DateOfBirth},{pet
-                .Gender},{pet.Weight},{pet.Color},{pet.Temperament},{pet.DateArrived},{pet.Bio},{pet.Status},{pet.AdoptionFee}");
+            csv.AppendLine($"{pet.Id},{pet.Details.Name},{FosterParent},{pet.Details.Species},{pet.Details.Breed},{pet.Details.DateOfBirth},{pet
+                .Details.Gender},{pet.Details.Weight},{pet.Details.Color},{pet.Details.Temperament},{pet.Details.DateArrived},{pet.Details.Bio},{pet.Status},{pet.Details.AdoptionFee}");
         }
         String date = DateTime.Now.ToString("yyyyMMddHHmm");
       
