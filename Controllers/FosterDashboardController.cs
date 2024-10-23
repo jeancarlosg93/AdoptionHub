@@ -2,6 +2,7 @@
 using AdoptionHub.Contexts;
 using AdoptionHub.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 
 namespace AdoptionHub.Controllers;
@@ -27,15 +28,16 @@ public class FosterDashboardController : Controller
         var username = HttpContext.Session.GetString("userName");
 
         // Query the database to get the list of pets fostered by the current user
-        var fosteredPets = (from p in _context.Pets
+        var fosteredPets = (from p in _context.Pets.Include(p => p.Details)
+                            //join d in _context.PetDetails on p.Id equals d.Id
                             join fa in _context.Fosterassignments on p.Id equals fa.PetId
                             join u in _context.Users on fa.FosterId equals u.Id
                             where u.Username == username
                             select new FosterDashboardViewModel
                             {
                                 Id = p.Id,
-                                Name = p.Name,
-                                Species = p.Species,
+                                Name = p.Details.Name,
+                                Species = p.Details.Species,
                                 Images = _context.Petimages
                                                 .Where(pi => pi.PetId == p.Id)
                                                 .Select(pi => pi.ImageUrl).ToList()

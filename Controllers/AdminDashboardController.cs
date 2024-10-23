@@ -29,7 +29,7 @@ public class AdminDashboardController : Controller
 
     public async Task<IActionResult> EditPets(List<Pet> model)
     {
-        model = await _context.Pets.Include(p => p.FosterParent).ToListAsync();
+        model = await _context.Pets.Include(p => p.FosterParent).Include(p => p.Details).ToListAsync();
         return View(model);
     }
 
@@ -43,7 +43,7 @@ public class AdminDashboardController : Controller
     public async Task<IActionResult> EditPet(int id)
     {
         PetEditViewModel model = new PetEditViewModel();
-        model.Pet = await _context.Pets.FindAsync(id);
+        model.Pet = await _context.Pets.Include(p => p.Details).Where(p => p.Id == id).FirstAsync();
         if (model.Pet == null)
         {
             model.Pet = new Pet();
@@ -82,7 +82,7 @@ public class AdminDashboardController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditPet(PetEditViewModel model)
     {
-        var pet = await _context.Pets.FindAsync(model.Pet?.Id);
+        var pet = await _context.Pets.Include(p => p.Details).Where(p => p.Id == model.Pet.Id).FirstAsync();
 
         if (pet != null)
         {

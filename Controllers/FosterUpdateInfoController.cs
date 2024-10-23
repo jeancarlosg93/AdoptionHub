@@ -22,7 +22,7 @@ namespace AdoptionHub.Controllers
             model.ApptDate = new List<DateTime?>();
             model.ApptReason = new List<string>();
 
-            var pet = _context.Pets
+            var pet = _context.Pets.Include(pet => pet.Details)
                 .Where(p => p.Id == petId)
                 .Include(p => p.Vetappointments)
                 .Include(p => p.Petimages)
@@ -31,8 +31,8 @@ namespace AdoptionHub.Controllers
             if (pet != null)
             {
                 model.Id = pet.Id;
-                model.Name = pet.Name;
-                model.Bio = pet.Bio;
+                model.Name = pet.Details.Name;
+                model.Bio = pet.Details.Bio;
 
                 foreach (var appointment in pet.Vetappointments)
                 {
@@ -52,12 +52,12 @@ namespace AdoptionHub.Controllers
         [HttpPost]
         public IActionResult UpdatePetInfo(FosterUpdateInfoViewModel model, IFormFile newImage)
         {
-            var pet = _context.Pets.Find(model.Id);
+            var pet = _context.Pets.Include(pet => pet.Details).Where(pet => pet.Id == model.Id).First();
 
             if (pet != null)
             {
                 // Update pet bio
-                pet.Bio = model.Bio;
+                pet.Details.Bio = model.Bio;
                 _context.Pets.Update(pet);
                 _context.SaveChanges();
 
@@ -67,10 +67,10 @@ namespace AdoptionHub.Controllers
                     var filePath = Path.Combine("wwwroot/images", newImage.FileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        newImage.CopyTo(stream); // Save uploaded file
+                        newImage.CopyTo(stream); //save uploaded file
                     }
 
-                    // Save image info to database
+                    //save image info to database
                     var petImage = new Petimage
                     {
                         PetId = pet.Id,
