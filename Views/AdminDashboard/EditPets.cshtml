@@ -27,19 +27,19 @@
             @foreach (var pet in Model)
             {
                 <tr>
-                    <td>@pet.Name</td>
+                    <td>@pet.Details.Name</td>
                     <td>@(pet.FosterParent != null ? pet.FosterParent.FirstName + " " + pet.FosterParent.LastName : "Not fostered")</td>
-                    <td>@pet.Species</td>
-                    <td>@pet.Breed</td>
-                    <td>@pet.DateOfBirth?.ToString("yyyy-MM-dd")</td>
-                    <td>@pet.Gender</td>
-                    <td>@pet.Weight</td>
-                    <td>@pet.Color</td>
-                    <td>@pet.Temperament</td>
-                    <td>@pet.DateArrived?.ToString("yyyy-MM-dd")</td>
-                    <td>@pet.Bio</td>
+                    <td>@pet.Details.Species</td>
+                    <td>@pet.Details.Breed</td>
+                    <td>@pet.Details.DateOfBirth?.ToString("yyyy-MM-dd")</td>
+                    <td>@pet.Details.Gender</td>
+                    <td>@pet.Details.Weight</td>
+                    <td>@pet.Details.Color</td>
+                    <td>@pet.Details.Temperament</td>
+                    <td>@pet.Details.DateArrived?.ToString("yyyy-MM-dd")</td>
+                    <td>@pet.Details.Bio</td>
                     <td>@pet.Status</td>
-                    <td>@pet.AdoptionFee?.ToString("C")</td>
+                    <td>@pet.Details.AdoptionFee?.ToString("C")</td>
                     <td>
                         <a href="@Url.Action("EditPet", "AdminDashboard", new { id = pet.Id })" class="btn btn-primary">Edit</a>
                     </td>

@@ -9,9 +9,9 @@
 <form asp-action="EditPet" method="post">
     <input type="hidden" asp-for="Pet.Id" />
     <div class="form-group">
-        <label asp-for="Pet.Name" class="control-label"></label>
-        <input asp-for="Pet.Name" class="form-control" />
-        <span asp-validation-for="Pet.Name" class="text-danger"></span>
+        <label asp-for="Pet.Details.Name" class="control-label"></label>
+        <input asp-for="Pet.Details.Name" class="form-control" />
+        <span asp-validation-for="Pet.Details.Name" class="text-danger"></span>
     </div>
 
     <div class="form-group">
@@ -22,57 +22,57 @@
         </select>
     </div>
     <div class="form-group">
-        <label asp-for="Pet.Species" class="control-label"></label>
-        <input asp-for="Pet.Species" class="form-control" />
-        <span asp-validation-for="Pet.Species" class="text-danger"></span>
+        <label asp-for="Pet.Details.Species" class="control-label"></label>
+        <input asp-for="Pet.Details.Species" class="form-control" />
+        <span asp-validation-for="Pet.Details.Species" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Pet.Breed" class="control-label"></label>
-        <input asp-for="Pet.Breed" class="form-control" />
-        <span asp-validation-for="Pet.Breed" class="text-danger"></span>
+        <label asp-for="Pet.Details.Breed" class="control-label"></label>
+        <input asp-for="Pet.Details.Breed" class="form-control" />
+        <span asp-validation-for="Pet.Details.Breed" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Pet.DateOfBirth" class="control-label"></label>
-        <input asp-for="Pet.DateOfBirth" class="form-control" type="date" />
-        <span asp-validation-for="Pet.DateOfBirth" class="text-danger"></span>
+        <label asp-for="Pet.Details.DateOfBirth" class="control-label"></label>
+        <input asp-for="Pet.Details.DateOfBirth" class="form-control" type="date" />
+        <span asp-validation-for="Pet.Details.DateOfBirth" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Pet.Gender" class="control-label"></label>
-        <input asp-for="Pet.Gender" class="form-control" />
-        <span asp-validation-for="Pet.Gender" class="text-danger"></span>
+        <label asp-for="Pet.Details.Gender" class="control-label"></label>
+        <input asp-for="Pet.Details.Gender" class="form-control" />
+        <span asp-validation-for="Pet.Details.Gender" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Pet.Weight" class="control-label"></label>
-        <input asp-for="Pet.Weight" class="form-control" type="number" step="0.01" />
-        <span asp-validation-for="Pet.Weight" class="text-danger"></span>
+        <label asp-for="Pet.Details.Weight" class="control-label"></label>
+        <input asp-for="Pet.Details.Weight" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="Pet.Details.Weight" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Pet.Color" class="control-label"></label>
-        <input asp-for="Pet.Color" class="form-control" />
-        <span asp-validation-for="Pet.Color" class="text-danger"></span>
+        <label asp-for="Pet.Details.Color" class="control-label"></label>
+        <input asp-for="Pet.Details.Color" class="form-control" />
+        <span asp-validation-for="Pet.Details.Color" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Pet.Temperament" class="control-label"></label>
-        <input asp-for="Pet.Temperament" class="form-control" />
-        <span asp-validation-for="Pet.Temperament" class="text-danger"></span>
+        <label asp-for="Pet.Details.Temperament" class="control-label"></label>
+        <input asp-for="Pet.Details.Temperament" class="form-control" />
+        <span asp-validation-for="Pet.Details.Temperament" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Pet.DateArrived" class="control-label"></label>
-        <input asp-for="Pet.DateArrived" class="form-control" type="date" />
-        <span asp-validation-for="Pet.DateArrived" class="text-danger"></span>
+        <label asp-for="Pet.Details.DateArrived" class="control-label"></label>
+        <input asp-for="Pet.Details.DateArrived" class="form-control" type="date" />
+        <span asp-validation-for="Pet.Details.DateArrived" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Pet.Bio" class="control-label"></label>
-        <textarea asp-for="Pet.Bio" class="form-control"></textarea>
-        <span asp-validation-for="Pet.Bio" class="text-danger"></span>
+        <label asp-for="Pet.Details.Bio" class="control-label"></label>
+        <textarea asp-for="Pet.Details.Bio" class="form-control"></textarea>
+        <span asp-validation-for="Pet.Details.Bio" class="text-danger"></span>
     </div>
 
     <div class="form-group">
@@ -82,9 +82,9 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="Pet.AdoptionFee" class="control-label"></label>
-        <input asp-for="Pet.AdoptionFee" class="form-control" type="number" step="0.01" />
-        <span asp-validation-for="Pet.AdoptionFee" class="text-danger"></span>
+        <label asp-for="Pet.Details.AdoptionFee" class="control-label"></label>
+        <input asp-for="Pet.Details.AdoptionFee" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="Pet.Details.AdoptionFee" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Save</button>

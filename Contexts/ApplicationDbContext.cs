@@ -22,6 +22,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Pet> Pets { get; set; }
 
+    public virtual DbSet<PetDetail> PetDetails { get; set; }
+
     public virtual DbSet<Petimage> Petimages { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -29,6 +31,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Vetappointment> Vetappointments { get; set; }
 
     public virtual DbSet<Veterinarian> Veterinarians { get; set; }
+
     public virtual DbSet<SignupCode> SignupCodes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -176,39 +179,64 @@ public partial class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.FosterParentId, "IX_pets_FosterParentId");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            
+            entity.Property(e => e.Status)
+                .HasMaxLength(15)
+                .HasColumnName("status");
+
+            entity.HasOne(d => d.FosterParent).WithMany(p => p.Pets).HasForeignKey(d => d.FosterParentId);
+            entity.HasOne(d => d.Details).WithOne(p => p.Pet).HasForeignKey<PetDetail>(d => d.Id);
+        });
+
+        modelBuilder.Entity<PetDetail>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("petdetails");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+
             entity.Property(e => e.AdoptionFee)
                 .HasPrecision(10, 2)
                 .HasColumnName("adoptionFee");
+
             entity.Property(e => e.Bio)
                 .HasMaxLength(255)
                 .HasColumnName("bio");
+
             entity.Property(e => e.Breed)
                 .HasMaxLength(25)
                 .HasColumnName("breed");
+
             entity.Property(e => e.Color)
                 .HasMaxLength(50)
                 .HasColumnName("color");
+
             entity.Property(e => e.DateArrived).HasColumnName("dateArrived");
+
             entity.Property(e => e.DateOfBirth).HasColumnName("dateOfBirth");
+
             entity.Property(e => e.Gender)
                 .HasMaxLength(1)
                 .IsFixedLength()
                 .HasColumnName("gender");
+
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .HasColumnName("name");
+
             entity.Property(e => e.Species)
                 .HasMaxLength(3)
                 .HasColumnName("species");
-            entity.Property(e => e.Status)
-                .HasMaxLength(15)
-                .HasColumnName("status");
+
             entity.Property(e => e.Temperament)
                 .HasMaxLength(30)
                 .HasColumnName("temperament");
+
             entity.Property(e => e.Weight).HasColumnName("weight");
 
-            entity.HasOne(d => d.FosterParent).WithMany(p => p.Pets).HasForeignKey(d => d.FosterParentId);
+            entity.HasOne(d => d.Pet).WithOne(p => p.Details)
+                  .HasForeignKey<PetDetail>(d => d.Id);
         });
 
         modelBuilder.Entity<Petimage>(entity =>

@@ -31,20 +31,20 @@ namespace AdoptionHub.Controllers
         {
             List<UserDashboardViewModel> model = new List<UserDashboardViewModel>();
 
-            var pets = _context.Pets;
+            var pets = _context.Pets.Include(pet => pet.Details);
 
             foreach (var pet in pets)
             {
                 model.Add(new UserDashboardViewModel
                 {
                     Id = pet.Id,
-                    Name = pet.Name,
-                    Breed = pet.Breed,
-                    Gender = pet.Gender == "F" ? "Female" : "Male",
-                    Age = pet.DateOfBirth.HasValue
-                        ? (DateTime.Now.Year - pet.DateOfBirth.Value.Year).ToString()
+                    Name = pet.Details.Name,
+                    Breed = pet.Details.Breed,
+                    Gender = pet.Details.Gender == "F" ? "Female" : "Male",
+                    Age = pet.Details.DateOfBirth.HasValue
+                        ? (DateTime.Now.Year - pet.Details.DateOfBirth.Value.Year).ToString()
                         : "Unknown",
-                    Temperament = pet.Temperament,
+                    Temperament = pet.Details.Temperament,
                 });
             }
 
@@ -53,7 +53,7 @@ namespace AdoptionHub.Controllers
 
         public IActionResult Details(int id)
         {
-            Pet pet = _context.Pets.FirstOrDefault(p => p.Id == id);
+            Pet pet = _context.Pets.Include(p => p.Details).FirstOrDefault(p => p.Id == id);
             
           return View(pet);
         }
