@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using AdoptionHub.Contexts;
 using AdoptionHub.Models;
+using AdoptionHub.Services;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 
@@ -10,9 +11,11 @@ namespace AdoptionHub.Controllers;
 public class LoginController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly LogInLogService _logInLogService;
 
-    public LoginController(ApplicationDbContext context)
+    public LoginController(ApplicationDbContext context ,LogInLogService logInLogService)
     {
+        _logInLogService = logInLogService;
         _context = context;
     }
 
@@ -41,16 +44,19 @@ public class LoginController : Controller
 
             if (user.UserRole == "admin")
             {
+                _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
                 return RedirectToAction("Index", "AdminDashboard");
             }
 
             if (user.UserRole == "foster")
             {
+                _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
                 return RedirectToAction("Index", "FosterDashboard");
             }
         }
         else
         {
+                _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
             model.ErrorMessage = "Your username/password is incorrect";
             return View("Index",model);
         }
