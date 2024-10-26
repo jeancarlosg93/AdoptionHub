@@ -1,29 +1,43 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Login Page";
 }
 
-<div id ="map" class= "heroBackground">
-<div class="container-lg col-xl-10 col-xxl-8 px-4 py-5 " >
-    <div class="row align-items-center g-lg-5">
-        <div class="col-lg-7 text-center text-lg-start ">
-            <h1 class="display-4 fw-bold lh-1 mb-3 text-white">Lorem ipsum dolor sit amet</h1>
-            <p class="col-lg-10 fs-4 text-white">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad at atque cum ducimus eaque earum enim, error explicabo facere fuga id molestias nihil quibusdam unde voluptas. Laboriosam nobis quas qui!</p>
-        </div>
-        <div class="col-md-10 mx-auto col-lg-5">
-            <form class="p-4 p-md-5 border rounded-3 bg-light" asp-action="LoginMethod" method="post">
-                <div class="form-floating mb-3">
-                    <input type="text" name="Username" class="form-control" id="Username" placeholder="User Name">
-                    <label for="Username">User Name</label>
+<div id="map" class="heroBackground">
+    <div class="container-lg col-xl-10 col-xxl-8 px-4 py-5">
+        <div class="row align-items-center g-lg-5">
+            <div class="col-md-12 mx-auto col-lg-6">
+                <div class="p-4 p-md-5 border rounded-3 bg-light">
+                    <h2 class="pb-4 text-center text-black-50">We are so happy you're back!</h2>
+                    <form asp-action="LoginMethod" method="post">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Username" type="text" class="form-control" placeholder="User Name">
+                            <label asp-for="Username">User Name</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Password">
+                            <label asp-for="Password">Password</label>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model?.ErrorMessage))
+                        {
+                            <div class="rounded my-2 p-2 bg-danger bg-opacity-10 text-center">
+                                <p class="text-danger">
+                                    @Model.ErrorMessage
+                                </p>
+                            </div>
+                        }
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-lg btn-primary" type="submit">Log in</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a class="btn btn-lg btn-outline-primary w-100" asp-controller="Login" asp-action="Register">Register</a>
+                    </div>
                 </div>
-                <div class="form-floating mb-3">
-                    <input type="password" name="Password" class="form-control" id="Password" placeholder="Password">
-                    <label for="Password">Password</label>
-                </div>
-                <button class="w-100 btn btn-lg btn-primary" type="submit">Log in</button>
-                <hr class="my-4">
-                <small class="text-muted">By clicking Sign up, you agree to the terms of use.</small>
-            </form>
+            </div>
         </div>
     </div>
-</div>
 </div>

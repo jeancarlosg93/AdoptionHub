@@ -1,37 +1,77 @@
 ﻿@model AdoptionHub.Models.Pet
+@{
+    ViewData["Title"] = $"{Model.Details.Name} - Pet Details";
+}
 
-<div class="container mt-4 ">
-    <div class="row">
-        <a class="btn btn-outline-danger" href='@Url.Action("Dashboard", "Home")'>Go Back</a>
-    </div>
+@functions {
+    private static readonly Random Random = new Random();
+}
 
+<div class="container mt-4 mb-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Home")" class="text-decoration-none">Available Pets</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Details.Name</li>
+        </ol>
+    </nav>
 
-    @functions {
-        private static readonly Random Random = new Random();
-    }
+    <div class="card shadow border-0 overflow-hidden">
+        <div class="row g-0">
+            <div class="col-lg-7 position-relative">
+                <img src="/images/exampleImg/dog@(Random.Next(1, 8)).jpg" 
+                     class="w-100 h-100 object-fit-cover" 
+                     alt="@Model.Details.Name"
+                     style="max-height: 600px;">
+                
+            </div>
+            <div class="col-lg-5">
+                <div class="card-body p-4">
+                    <h2 class="card-title mb-4 display-6">@Model.Details.Name</h2>
+                    
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">@Model.Details.Species</span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">@Model.Details.Breed</span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">@Model.Details.Gender</span>
+                    </div>
 
-    <div class=" container d-flex justify-content-center">
-        <div class="card m-3 pet-card shadow-sm" style="width: 50rem;">
-            <div class="row g-0">
-                <div class="col-md-7">
-                    <img src="/images/exampleImg/dog@(Random.Next(1, 8)).jpg" class="img-fluid" alt="...">
-                </div>
-                <div class="col-md-5">
-                    <div class="card-body">
-                        <h4 class="card-title">@Model.Details.Name </h4>
-                        <div class="card-body">
-                            <p class="card-text">Species = @Model.Details.Species</p>
-                            <p class="card-text">Breed = @Model.Details.Breed</p>
-                            <p class="card-text">Gender = @Model.Details.Gender</p>
-                            <p class="card-text">Weight = @Model.Details.Weight</p>
-                            <p class="card-text">Color = @Model.Details.Color</p>
-                            <p class="card-text">Temperament = @Model.Details.Temperament</p>
-                            <p class="card-text">Bio = @Model.Details.Bio</p>
-                            <p class="card-text">AdoptionFee = @Model.Details.AdoptionFee</p>
+                    <div class="mb-4">
+                        <p class="lead mb-4">@Model.Details.Bio</p>
+                        
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="p-3 rounded bg-light">
+                                    <small class="text-muted d-block">Weight</small>
+                                    <strong>@Model.Details.Weight kg</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded bg-light">
+                                    <small class="text-muted d-block">Color</small>
+                                    <strong>@Model.Details.Color</strong>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="mb-3">Temperament</h5>
+                        <p class="card-text">@Model.Details.Temperament</p>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-lg">Start Adoption Process</button>
+                        <a href="@Url.Action("Dashboard", "Home")" class="btn btn-outline-secondary">
+                            Back to Available Pets
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+        @if (Model.Details.AdoptionFee.HasValue)
+        {
+        <div class="position-absolute top-0 end-0 bg-primary text-white px-3 py-2 m-3 rounded-pill">
+            <strong>Adoption Fee: @Model.Details.AdoptionFee?.ToString("C")</strong>
+        </div>
+        }
     </div>
 </div>

@@ -18,13 +18,12 @@
                          class="card-img-top" alt="...">
                     <div class="card-body">
                         <h4 class="card-title">@pet.Name</h4>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <p class="card-text">@pet.Temperament</p>
                     </div>
 
                     <ul class="list-group list-group-flush ">
                         <li class="list-group-item">Gender: @pet.Gender</li>
                         <li class="list-group-item"> Age: @pet.Age</li>
-                        <li class="list-group-item">Temperament: @pet.Temperament</li>
                     </ul>
                     <div class="card-body d-flex justify-content-center">
                         <a href="@Url.Action("Details", "Home",new {id = pet.Id})" class="btn btn-outline-dark">View more details</a>
