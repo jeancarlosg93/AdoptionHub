@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Login Page";
+}
+
+<div id="map" class="heroBackground">
+    <div class="container-lg col-xl-10 col-xxl-8 px-4 py-5 ">
+        <div class="row align-items-center g-lg-5">
+            <div class="col-md-10 mx-auto col-lg-5">
+               
+                
+                <form class="p-4 p-md-5 border rounded-3 bg-light" asp-action="LoginMethod" method="post">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="Username" class="form-control" id="Username" placeholder="User Name">
+                        <label for="Username">User Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" name="Password" class="form-control" id="Password" placeholder="Password">
+                        <label for="Password">Password</label>
+                    </div>
+                    <button class="btn btn-lg btn-primary" type="submit">Register</button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>

@@ -57,11 +57,36 @@ public class LoginController : Controller
         else
         {
                 _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
-            model.ErrorMessage = "Your username/password is incorrect";
+            model.ErrorMessage = "Your username or password is incorrect";
             return View("Index",model);
         }
 
         return View("Index",model);
+    }
+
+    public IActionResult Register(RegisterViewModel model)
+    {
+        var code = _context.SignupCodes.FirstOrDefault(a => a.Code == model.Code);
+
+        var newuser = new User();
+
+        if (model != null)
+        {
+            newuser.Username = model.User.Username;
+            newuser.Password = model.User.Password;
+            newuser.Email = model.User.Email;
+            newuser.LastName = model.User.LastName;
+            newuser.FirstName = model.User.FirstName;
+            newuser.Address = model.User.Address;
+            newuser.PhoneNumber =  model.User.PhoneNumber;
+        }
+
+        if (code != null)
+        {
+            _context.Users.Add(newuser);
+        }
+
+        return View("Register",model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
