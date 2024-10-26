@@ -67,4 +67,12 @@
     .hvr-grow:active {
         transform: scale(1.05);
     }
+
+    .badge {
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+    .object-fit-cover {
+        object-fit: cover;
+    }
 }

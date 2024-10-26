@@ -3,6 +3,7 @@ using AdoptionHub.Contexts;
 using AdoptionHub.Models;
 using AdoptionHub.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 
 
@@ -13,7 +14,7 @@ public class LoginController : Controller
     private readonly ApplicationDbContext _context;
     private readonly LogInLogService _logInLogService;
 
-    public LoginController(ApplicationDbContext context ,LogInLogService logInLogService)
+    public LoginController(ApplicationDbContext context, LogInLogService logInLogService)
     {
         _logInLogService = logInLogService;
         _context = context;
@@ -56,42 +57,87 @@ public class LoginController : Controller
         }
         else
         {
-                _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
+            _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
             model.ErrorMessage = "Your username or password is incorrect";
-            return View("Index",model);
+            return View("Index", model);
         }
 
-        return View("Index",model);
+        return View("Index", model);
     }
 
-    public IActionResult Register(RegisterViewModel model)
+  [HttpGet]
+public IActionResult Register()
+{
+    return View(new RegisterViewModel { User = new User() });
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Register(RegisterViewModel model)
+{
+    
+    if (!ModelState.IsValid)
     {
-        var code = _context.SignupCodes.FirstOrDefault(a => a.Code == model.Code);
-
-        var newuser = new User();
-
-        if (model != null)
-        {
-            newuser.Username = model.User.Username;
-            newuser.Password = model.User.Password;
-            newuser.Email = model.User.Email;
-            newuser.LastName = model.User.LastName;
-            newuser.FirstName = model.User.FirstName;
-            newuser.Address = model.User.Address;
-            newuser.PhoneNumber =  model.User.PhoneNumber;
-        }
-
-        if (code != null)
-        {
-            _context.Users.Add(newuser);
-        }
-
-        return View("Register",model);
+        return View(model);
     }
+
+    try
+    { 
+        var code = await _context.SignupCodes.FirstOrDefaultAsync(a => 
+            a.Code == model.Code && 
+            a.ExpiresAt > DateTime.Now);
+
+        if (code == null)
+        {
+            ModelState.AddModelError("Code", "Invalid or expired registration code");
+            return View(model);
+        }
+
+      
+        if (await _context.Users.AnyAsync(u => u.Username == model.User.Username))
+        {
+            ModelState.AddModelError("User.Username", "Username already taken");
+            return View(model);
+        }
+
+   
+        var newUser = new User
+        {
+            Username = model.User.Username,
+            Password = model.User.Password, 
+            Email = model.User.Email,
+            LastName = model.User.LastName,
+            FirstName = model.User.FirstName,
+            Address = model.User.Address,
+            PhoneNumber = model.User.PhoneNumber,
+            UserRole = "foster" 
+        };
+
+        await _context.Users.AddAsync(newUser);
+        
+        _context.SignupCodes.Remove(code);
+        
+        await _context.SaveChangesAsync();
+
+        _logInLogService.UpdateLogRegistry($"New user registered: {newUser.Username}");
+
+        TempData["SuccessMessage"] = "Registration successful! Please log in.";
+        return RedirectToAction("Index", "Login");
+    }
+    catch (Exception ex)
+    {
+        _logInLogService.UpdateLogRegistry($"Registration failed: {ex.Message}");
+        ModelState.AddModelError("", "An error occurred during registration. Please try again.");
+        return View(model);
+    }
+}
+
+
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
+    
 }
