@@ -365,3 +365,6 @@ FodyWeavers.xsd
 #Environment Variables
 appsettings.Development.json
 appsettings.json
+
+#Log files
+Output/
