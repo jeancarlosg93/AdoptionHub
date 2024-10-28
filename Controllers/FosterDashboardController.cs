@@ -1,11 +1,13 @@
-﻿using System.Diagnostics;
-using AdoptionHub.Contexts;
+﻿using AdoptionHub.Contexts;
+using AdoptionHub.Filters;
 using AdoptionHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
+using System.Diagnostics;
 
 namespace AdoptionHub.Controllers;
+
+[RoleAuthorize("foster")]
 public class FosterDashboardController : Controller
 {
     private readonly ILogger<FosterDashboardController> _logger;
@@ -19,17 +21,13 @@ public class FosterDashboardController : Controller
 
     public IActionResult Index(List<FosterDashboardViewModel> model)
     {
-        if (!HttpContext.Session.GetString("userRole").Equals("foster"))
-        {
-            return RedirectToAction("Index", "Home");
-        }
 
         // Get the current username from the session
         var username = HttpContext.Session.GetString("userName");
 
         // Query the database to get the list of pets fostered by the current user
         var fosteredPets = (from p in _context.Pets.Include(p => p.Details)
-                            //join d in _context.PetDetails on p.Id equals d.Id
+                                //join d in _context.PetDetails on p.Id equals d.Id
                             join fa in _context.Fosterassignments on p.Id equals fa.PetId
                             join u in _context.Users on fa.FosterId equals u.Id
                             where u.Username == username
@@ -49,57 +47,57 @@ public class FosterDashboardController : Controller
     }
 
 
-//public readonly ILogger<LoginController> _logger;
-//public readonly string connectionString;
+    //public readonly ILogger<LoginController> _logger;
+    //public readonly string connectionString;
 
-//public FosterDashboardController(IConfiguration configuration)
-//{
-//    connectionString = configuration.GetConnectionString("DefaultConnection");
-//}
+    //public FosterDashboardController(IConfiguration configuration)
+    //{
+    //    connectionString = configuration.GetConnectionString("DefaultConnection");
+    //}
 
-//public IActionResult Index(List<FosterDashboardViewModel> model)
-//{
-//    if (!HttpContext.Session.GetString("userRole").Equals("foster")) {
-//        return RedirectToAction("Index", "Home");
-//    }
+    //public IActionResult Index(List<FosterDashboardViewModel> model)
+    //{
+    //    if (!HttpContext.Session.GetString("userRole").Equals("foster")) {
+    //        return RedirectToAction("Index", "Home");
+    //    }
 
-//    //obtain animal list that the user fosters
+    //    //obtain animal list that the user fosters
 
-//    model = new List<FosterDashboardViewModel>();
+    //    model = new List<FosterDashboardViewModel>();
 
-//    using (MySqlConnection connection = new MySqlConnection(connectionString))
-//    {
-//        connection.Open();
-//        string sql = "select p.* from Pets p join FosterAssignments fa on p.id = fa.petId join Users u on fa.fosterId = u.id where Username = '" + HttpContext.Session.GetString("Username") + "';";
+    //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+    //    {
+    //        connection.Open();
+    //        string sql = "select p.* from Pets p join FosterAssignments fa on p.id = fa.petId join Users u on fa.fosterId = u.id where Username = '" + HttpContext.Session.GetString("Username") + "';";
 
-//        using (MySqlCommand command = new MySqlCommand(sql, connection))
-//        {
-//            using (MySqlDataReader reader = command.ExecuteReader())
-//            {
-//                while (reader.Read())
-//                {
-//                    int id = (int)reader["id"];
-//                    string name = reader["name"].ToString();
-//                    string species = reader["species"].ToString();
+    //        using (MySqlCommand command = new MySqlCommand(sql, connection))
+    //        {
+    //            using (MySqlDataReader reader = command.ExecuteReader())
+    //            {
+    //                while (reader.Read())
+    //                {
+    //                    int id = (int)reader["id"];
+    //                    string name = reader["name"].ToString();
+    //                    string species = reader["species"].ToString();
 
-//                    var pet = new FosterDashboardViewModel
-//                    {
-//                        Id = id,
-//                        Name = name,
-//                        Species = species,
-//                        Images = new List<string>()
-//                    };
+    //                    var pet = new FosterDashboardViewModel
+    //                    {
+    //                        Id = id,
+    //                        Name = name,
+    //                        Species = species,
+    //                        Images = new List<string>()
+    //                    };
 
-//                    model.Add(pet);
-//                }
-//            }
-//        }
-//    }
-//    return View(model);
-//}
+    //                    model.Add(pet);
+    //                }
+    //            }
+    //        }
+    //    }
+    //    return View(model);
+    //}
 
 
-[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

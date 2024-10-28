@@ -1,4 +1,5 @@
 ﻿using AdoptionHub.Contexts;
+using AdoptionHub.Filters;
 using AdoptionHub.Models;
 using AdoptionHub.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using System.Text;
 
 namespace AdoptionHub.Controllers;
 
+[RoleAuthorize("admin")]
 public class AdminDashboardController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -59,7 +61,7 @@ public class AdminDashboardController : Controller
         StringBuilder csv = new StringBuilder();
         csv.AppendLine("ID,Name,FosterParent,Species,Breed,DateOfBirth,Gender,Weight,Color,Temperament,DateArrived,Bio,Status,AdoptionFee");
         foreach (var pet in model)
-        { 
+        {
             String FosterParent;
             if (pet.FosterParent == null)
             {
@@ -69,13 +71,13 @@ public class AdminDashboardController : Controller
             {
                 FosterParent = pet.FosterParent.FullName;
             }
-                
+
             csv.AppendLine($"{pet.Id},{pet.Details.Name},{FosterParent},{pet.Details.Species},{pet.Details.Breed},{pet.Details.DateOfBirth},{pet
                 .Details.Gender},{pet.Details.Weight},{pet.Details.Color},{pet.Details.Temperament},{pet.Details.DateArrived},{pet.Details.Bio},{pet.Status},{pet.Details.AdoptionFee}");
         }
         String date = DateTime.Now.ToString("yyyyMMddHHmm");
-      
-        return File(Encoding.UTF8.GetBytes(csv.ToString()),"text/csv",$"ListOfPets{date}.csv");
+
+        return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"ListOfPets{date}.csv");
     }
 
     [HttpPost]

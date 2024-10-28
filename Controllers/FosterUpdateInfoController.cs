@@ -1,11 +1,12 @@
 ﻿using AdoptionHub.Contexts;
+using AdoptionHub.Filters;
 using AdoptionHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
 
 namespace AdoptionHub.Controllers
 {
+    [RoleAuthorize("foster")]
     public class FosterUpdateInfoController : Controller
     {
 
