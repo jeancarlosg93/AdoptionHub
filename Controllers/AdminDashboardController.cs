@@ -69,7 +69,7 @@ public class AdminDashboardController : Controller
 
             foreach (var property in petType.GetProperties())
             {
-                if (property.Name == "Id" || property.Name == "FosterParent")
+                if (property.Name == "Id" || property.Name == "FosterParent" || property.Name == "CurrentFosterAssignment")
                     continue;
 
                 var newValue = property.GetValue(modelPet);
@@ -131,19 +131,19 @@ public class AdminDashboardController : Controller
 
     public async Task<IActionResult> DownloadReport(List<Pet> model)
     {
-        model = await _context.Pets.Include(p => p.FosterParent).ToListAsync();
+        model = await _context.Pets.Include(p => p.CurrentFosterAssignment).ThenInclude(fa => fa.Foster).ToListAsync();
         StringBuilder csv = new StringBuilder();
         csv.AppendLine("ID,Name,FosterParent,Species,Breed,DateOfBirth,Gender,Weight,Color,Temperament,DateArrived,Bio,Status,AdoptionFee");
         foreach (var pet in model)
         {
             String FosterParent;
-            if (pet.FosterParent == null)
+            if (pet.CurrentFosterAssignment?.Foster == null)
             {
                 FosterParent = "None";
             }
             else
             {
-                FosterParent = pet.FosterParent.FullName;
+                FosterParent = pet.CurrentFosterAssignment.Foster.FullName;
             }
 
             csv.AppendLine($"{pet.Id},{pet.Details.Name},{FosterParent},{pet.Details.Species},{pet.Details.Breed},{pet.Details.DateOfBirth},{pet
