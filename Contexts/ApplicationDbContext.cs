@@ -180,16 +180,26 @@ public partial class ApplicationDbContext : DbContext
             entity.ToTable("pets");
 
             entity.HasIndex(e => e.FosterParentId, "IX_pets_FosterParentId");
+            entity.HasIndex(e => e.CurrentFosterAssignmentId, "IX_pets_CurrentFosterAssignmentId"); // Add index for current foster assignment
 
             entity.Property(e => e.Id).HasColumnName("id");
-            
-            entity.Property(e => e.Status)
-                .HasMaxLength(15)
-                .HasColumnName("status");
+            entity.Property(e => e.Status).HasMaxLength(15).HasColumnName("status");
 
-            entity.HasOne(d => d.FosterParent).WithMany(p => p.Pets).HasForeignKey(d => d.FosterParentId);
-            entity.HasOne(d => d.Details).WithOne(p => p.Pet).HasForeignKey<PetDetail>(d => d.Id);
+            entity.HasOne(d => d.FosterParent)
+                .WithMany(p => p.Pets)
+                .HasForeignKey(d => d.FosterParentId);
+
+            entity.HasOne(d => d.Details)
+                .WithOne(p => p.Pet)
+                .HasForeignKey<PetDetail>(d => d.Id);
+
+            // Define the relationship between CurrentFosterAssignment and CurrentFosterAssignmentId
+            entity.HasOne(d => d.CurrentFosterAssignment)
+                .WithMany()
+                .HasForeignKey(d => d.CurrentFosterAssignmentId)
+                .OnDelete(DeleteBehavior.Restrict); // Optional: configure delete behavior
         });
+
 
         modelBuilder.Entity<PetDetail>(entity =>
         {
