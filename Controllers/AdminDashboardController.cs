@@ -31,7 +31,7 @@ public class AdminDashboardController : Controller
 
     public async Task<IActionResult> EditPets(List<Pet> model)
     {
-        model = await _context.Pets.Include(p => p.FosterParent).Include(p => p.Details).ToListAsync();
+        model = await _context.Pets.Include(p => p.CurrentFosterAssignment).ThenInclude(fa => fa.Foster).Include(p => p.Details).ToListAsync();
         return View(model);
     }
 
@@ -45,7 +45,7 @@ public class AdminDashboardController : Controller
     public async Task<IActionResult> EditPet(int id)
     {
         PetEditViewModel model = new PetEditViewModel();
-        model.Pet = await _context.Pets.Include(p => p.Details).Where(p => p.Id == id).FirstAsync();
+        model.Pet = await _context.Pets.Include(p => p.CurrentFosterAssignment).Include(p => p.Details).Where(p => p.Id == id).FirstOrDefaultAsync();
         if (model.Pet == null)
         {
             model.Pet = new Pet();
@@ -53,6 +53,80 @@ public class AdminDashboardController : Controller
 
         model.Users = await _context.Users.ToListAsync();
         return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditPet(PetEditViewModel model)
+    {
+        var pet = await _context.Pets.Include(p => p.Details).Where(p => p.Id == model.Pet.Id).FirstOrDefaultAsync();
+
+        //update pet if pet exists
+        if (pet != null)
+        {
+            var petType = typeof(Pet);
+            var modelPet = model.Pet;
+
+            foreach (var property in petType.GetProperties())
+            {
+                if (property.Name == "Id" || property.Name == "FosterParent")
+                    continue;
+
+                var newValue = property.GetValue(modelPet);
+                var currentValue = property.GetValue(pet);
+
+
+                if (newValue != null && !newValue.Equals(currentValue))
+                {
+                    property.SetValue(pet, newValue);
+                }
+            }
+
+            //create new foster assignment if foster parent changed
+            var newFosterParent = await _context.Users.FindAsync(model.Pet?.CurrentFosterAssignment?.FosterId);
+            if (newFosterParent?.Id != pet.CurrentFosterAssignment?.FosterId)
+            {
+                var newFosterAssignment = new Fosterassignment
+                {
+                    Foster = newFosterParent,
+                    Pet = pet,
+                    StartDate = DateOnly.FromDateTime(DateTime.Now)
+                };
+                pet.CurrentFosterAssignment = newFosterAssignment;
+                await _context.Fosterassignments.AddAsync(newFosterAssignment);
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+        //create pet if pet doesn't exist
+        else if (model.Pet != null)
+        {
+            var fosterParent = await _context.Users.FindAsync(model.Pet?.FosterParent?.Id);
+            if (fosterParent != null)
+            {
+                var newFosterAssignment = new Fosterassignment
+                {
+                    Foster = fosterParent,
+                    Pet = model.Pet,
+                    StartDate = DateOnly.FromDateTime(DateTime.Now)
+                };
+                model.Pet.CurrentFosterAssignment = newFosterAssignment;
+                await _context.Fosterassignments.AddAsync(newFosterAssignment);
+            }
+            await _context.Pets.AddAsync(model.Pet);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult GenerateSignupCode()
+    {
+        string newCode = _signupCodeService.GenerateSignupCode();
+
+        return Json(new { code = newCode });
     }
 
     public async Task<IActionResult> DownloadReport(List<Pet> model)
@@ -78,62 +152,6 @@ public class AdminDashboardController : Controller
         String date = DateTime.Now.ToString("yyyyMMddHHmm");
 
         return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"ListOfPets{date}.csv");
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditPet(PetEditViewModel model)
-    {
-        var pet = await _context.Pets.Include(p => p.Details).Where(p => p.Id == model.Pet.Id).FirstAsync();
-
-        if (pet != null)
-        {
-            var petType = typeof(Pet);
-            var modelPet = model.Pet;
-
-            foreach (var property in petType.GetProperties())
-            {
-                if (property.Name == "Id" || property.Name == "FosterParent")
-                    continue;
-
-                var newValue = property.GetValue(modelPet);
-                var currentValue = property.GetValue(pet);
-
-
-                if (newValue != null && !newValue.Equals(currentValue))
-                {
-                    property.SetValue(pet, newValue);
-                }
-            }
-
-            var fosterParent = await _context.Users.FindAsync(model.Pet?.FosterParent?.Id);
-
-
-            pet.FosterParent = fosterParent;
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
-        }
-        else if (model.Pet != null)
-        {
-            var fosterParent = await _context.Users.FindAsync(model.Pet?.FosterParent?.Id);
-
-
-            model.Pet.FosterParent = fosterParent;
-            await _context.Pets.AddAsync(model.Pet);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
-        }
-
-        return View(model);
-    }
-
-    [HttpPost]
-    public IActionResult GenerateSignupCode()
-    {
-        string newCode = _signupCodeService.GenerateSignupCode();
-
-        return Json(new { code = newCode });
     }
 
 
