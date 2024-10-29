@@ -56,3 +56,62 @@
         </div>
     </div>
 </div>
+
+
+<h1>Pet Adoption</h1>
+
+<form id="filter-form">
+    <select name="Species">
+        <option value="">Select Species</option>
+        <!-- Add species options here -->
+    </select>
+
+    <select name="Breed">
+        <option value="">Select Breed</option>
+        <!-- Add breed options here -->
+    </select>
+
+    <select name="Size">
+        <option value="">Select Size</option>
+        <option value="Small">Small</option>
+        <option value="Medium">Medium</option>
+        <option value="Large">Large</option>
+    </select>
+
+    <select name="Age">
+        <option value="">Select Age</option>
+        <option value="Puppy">Puppy</option>
+        <option value="Adult">Adult</option>
+    </select>
+
+    <select name="Gender">
+        <option value="">Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+    </select>
+
+    <button type="submit">Search</button>
+</form>
+
+@* <div id="pet-cards-container">
+    @await Html.PartialAsync("_PetCards", Model.Pets)
+</div> *@
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#filter-form').on('submit', function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: '@Url.Action("Search", "Home")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        $('#pet-cards-container').html(result);
+                    }
+                });
+            });
+        });
+    </script>
+}
