@@ -60,32 +60,45 @@
         <div class="col-9">
             <div class="row mb-4">
                 <div class="col-12">
-                    <a class="btn btn-outline-danger w-100" style="background-color: #dcf2f2;" href="@Url.Action("Index", "Home")">Go Back</a>
+                    <a class="btn btn-outline-custom w-100" href="@Url.Action("Index", "Home")">Go Back</a>
                 </div>
             </div>
+            @if (ViewBag.NoPetsFoundMessage != null)
+            {
+                <div class="alert alert-warning">
+                    @ViewBag.NoPetsFoundMessage
+                </div>
+            }
             <div class="row">
-
-                @foreach (var pet in Model)
-
+                 @if (Model.Count > 0)
                 {
-                    <div class="col-auto m-2 mb-2">
-                        <div class="hvr-grow card pet-card shadow-sm" style="width: 18rem;">
-                            @* <img src="/images/exampleImg/dog@(new Random().Next(1, 8)).jpg"
-                                 class="card-img-top" alt="..."> *@
-                            <img src="@pet.ImageUrl" class="card-img-top" alt="Image of @pet.Name">
-                            <div class="card-body">
-                                <h4 class="card-title">@pet.Name</h4>
-                                <p class="card-text">@pet.Temperament</p>
-                            </div>
+                    @foreach (var pet in Model)
+                    {
+                        <div class="col-auto m-2 mb-2">
+                            <div class="hvr-grow card pet-card shadow-sm" style="width: 18rem;">
+                                @* <img src="/images/exampleImg/dog@(new Random().Next(1, 8)).jpg"
+                        class="card-img-top" alt="..."> *@
+                                <img src="@pet.ImageUrl" class="card-img-top" alt="Image of @pet.Name">
+                                <div class="card-body">
+                                    <h4 class="card-title">@pet.Name</h4>
+                                    <p class="card-text">@pet.Temperament</p>
+                                </div>
 
-                            <ul class="list-group list-group-flush ">
-                                <li class="list-group-item">Gender: @pet.Gender</li>
-                                <li class="list-group-item"> Age: @pet.Age</li>
-                            </ul>
-                            <div class="card-body d-flex justify-content-center">
-                                <a href="@Url.Action("Details", "Home",new {id = pet.Id})" class="btn btn-outline-dark">View more details</a>
+                                <ul class="list-group list-group-flush ">
+                                    <li class="list-group-item">Gender: @pet.Gender</li>
+                                    <li class="list-group-item"> Age: @pet.AgeCategory</li>
+                                </ul>
+                                <div class="card-body d-flex justify-content-center">
+                                    <a href="@Url.Action("Details", "Home",new {id = pet.Id})" class="btn btn-outline-dark">View more details</a>
+                                </div>
                             </div>
                         </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        No pets available to display.
                     </div>
                 }
             </div>

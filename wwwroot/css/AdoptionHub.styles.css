@@ -77,8 +77,19 @@
     }
 }
 
-/*Pet filters*/
+.btn-outline-custom {
+    color: black;
+    border-color: #007bff;
+}
 
+    .btn-outline-custom:hover {
+        color: white;
+        background-color: black;
+        border-color: #007bff;
+    }
+
+
+/*Pet filters*/
 .filter-section {
     border: 1px solid #ddd;
     border-radius: 5px;

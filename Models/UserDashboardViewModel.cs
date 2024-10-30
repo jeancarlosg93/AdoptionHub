@@ -17,4 +17,7 @@ public class UserDashboardViewModel
     public String Temperament { get; set; }
 
     public String ImageUrl { get; set; }
+
+
+    public string AgeCategory { get; set; }
 }
