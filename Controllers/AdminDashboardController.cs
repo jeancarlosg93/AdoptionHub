@@ -101,7 +101,7 @@ public class AdminDashboardController : Controller
                 await _context.Fosterassignments.AddAsync(newFosterAssignment);
             }
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("EditPets");
         }
         //create pet if pet doesn't exist
         else if (model.Pet != null)
