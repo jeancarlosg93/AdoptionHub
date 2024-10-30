@@ -27,11 +27,80 @@ namespace AdoptionHub.Controllers
             return View();
         }
 
-        public IActionResult Dashboard()
+        public IActionResult Dashboard(UserDashboardViewModel viewModel)
         {
             List<UserDashboardViewModel> model = new List<UserDashboardViewModel>();
 
-            var pets = _context.Pets.Include(pet => pet.Details);
+            var petsQuery = _context.Pets.Include(pet => pet.Details).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(viewModel.Species))
+            {
+                petsQuery = petsQuery.Where(pet => pet.Details.Species == viewModel.Species);
+            }
+
+            if (!string.IsNullOrWhiteSpace(viewModel.Breed))
+            {
+                petsQuery = petsQuery.Where(pet => pet.Details.Breed == viewModel.Breed);
+            }
+
+            if (!string.IsNullOrWhiteSpace(viewModel.Age))
+            {
+                if (viewModel.Age.Equals("Puppy"))
+                {
+                    DateTime sixMonthsAgo = DateTime.Now.AddMonths(-6);
+                    petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth > sixMonthsAgo);
+                }
+                else if (viewModel.Age.Equals("Young"))
+                {
+                    DateTime sixMonthsAgo = DateTime.Now.AddMonths(-6);
+                    DateTime twoYearsAgo = DateTime.Now.AddYears(-2);
+                    petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth >= sixMonthsAgo && pet.Details.DateOfBirth < twoYearsAgo);
+                }
+
+                else if (viewModel.Age.Equals("Adult"))
+                {
+                    DateTime twoYearsAgo = DateTime.Now.AddYears(-2);
+                    DateTime eightYearsAgo = DateTime.Now.AddYears(-8);
+                    petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth >= twoYearsAgo && pet.Details.DateOfBirth < eightYearsAgo);
+                }
+
+                else if (viewModel.Age.Equals("Senior"))
+                {
+                    DateTime eightYearsAgo = DateTime.Now.AddYears(-8);
+                    petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth >= eightYearsAgo);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(viewModel.Size))
+            {
+                if (viewModel.Size.Equals("Small"))
+                {
+                    petsQuery = petsQuery.Where(pet => pet.Details.Weight >= 0 && pet.Details.Weight <= 25);
+                }
+
+                else if (viewModel.Size.Equals("Medium"))
+                {
+                    petsQuery = petsQuery.Where(pet => pet.Details.Weight >= 26 && pet.Details.Weight <= 50);
+                }
+
+                else if (viewModel.Size.Equals("Large"))
+                {
+                    petsQuery = petsQuery.Where(pet => pet.Details.Weight >= 51 && pet.Details.Weight <= 90);
+                }
+
+                else if (viewModel.Size.Equals("Extra Large"))
+                {
+                    petsQuery = petsQuery.Where(pet => pet.Details.Weight > 90);
+                }
+            }
+           
+
+            if (!string.IsNullOrWhiteSpace(viewModel.Gender))
+            {
+                petsQuery = petsQuery.Where(pet => pet.Details.Gender == viewModel.Gender);
+            }
+
+            var pets = petsQuery.ToList();
 
             foreach (var pet in pets)
             {
@@ -58,48 +127,6 @@ namespace AdoptionHub.Controllers
           return View(pet);
         }
 
-
-        [HttpPost]
-        public IActionResult Search(string species, string breed, string gender)
-        {
-            var filteredPets = GetFilteredPets(species, breed, gender);
-            return PartialView("_PetCards", filteredPets);
-        }
-
-        private List<UserDashboardViewModel> GetFilteredPets(string species = null, string breed = null, string gender = null)
-        {
-            // Query the pets with optional filters
-            var petsQuery = _context.Pets.Include(pet => pet.Details).AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(species))
-            {
-                petsQuery = petsQuery.Where(p => p.Details.Species == species);
-            }
-            if (!string.IsNullOrWhiteSpace(breed))
-            {
-                petsQuery = petsQuery.Where(p => p.Details.Breed == breed);
-            }
-            if (!string.IsNullOrWhiteSpace(gender))
-            {
-                petsQuery = petsQuery.Where(p => p.Details.Gender == gender);
-            }
-
-            var filteredPets = petsQuery.Select(p => new UserDashboardViewModel
-            {
-                Id = p.Id,
-                Name = p.Details.Name,
-                Breed = p.Details.Breed,
-                Gender = p.Details.Gender == "F" ? "Female" : "Male",
-                Age = p.Details.DateOfBirth.HasValue
-                    ? (DateTime.Now.Year - p.Details.DateOfBirth.Value.Year).ToString()
-                    : "Unknown",
-                Temperament = p.Details.Temperament,
-            }).ToList();
-
-            return filteredPets;
-        }
-
-        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
