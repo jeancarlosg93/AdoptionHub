@@ -59,6 +59,11 @@ public class AdminDashboardController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditPet(PetEditViewModel model)
     {
+        //if no foster was selected in form, replace empty CurrentFosterAssignment object with null
+        if (model.Pet?.CurrentFosterAssignment?.FosterId == null)
+        {
+            model.Pet.CurrentFosterAssignment = null;
+        }
         var pet = await _context.Pets.Include(p => p.Details).Where(p => p.Id == model.Pet.Id).FirstOrDefaultAsync();
 
         //update pet if pet exists
@@ -82,13 +87,13 @@ public class AdminDashboardController : Controller
                 }
             }
 
-            //create new foster assignment if foster parent changed
-            var newFosterParent = await _context.Users.FindAsync(model.Pet?.CurrentFosterAssignment?.FosterId);
-            if (newFosterParent?.Id != pet.CurrentFosterAssignment?.FosterId)
+            //create new foster assignment if foster changed
+            var newFoster = await _context.Users.FindAsync(model.Pet?.CurrentFosterAssignment?.FosterId);
+            if (newFoster?.Id != pet.CurrentFosterAssignment?.FosterId)
             {
                 var newFosterAssignment = new Fosterassignment
                 {
-                    Foster = newFosterParent,
+                    Foster = newFoster,
                     Pet = pet,
                     StartDate = DateOnly.FromDateTime(DateTime.Now)
                 };
@@ -101,12 +106,12 @@ public class AdminDashboardController : Controller
         //create pet if pet doesn't exist
         else if (model.Pet != null)
         {
-            var fosterParent = await _context.Users.FindAsync(model.Pet?.FosterParent?.Id);
-            if (fosterParent != null)
+            var foster = await _context.Users.FindAsync(model.Pet?.FosterParent?.Id);
+            if (foster != null)
             {
                 var newFosterAssignment = new Fosterassignment
                 {
-                    Foster = fosterParent,
+                    Foster = foster,
                     Pet = model.Pet,
                     StartDate = DateOnly.FromDateTime(DateTime.Now)
                 };
@@ -131,7 +136,7 @@ public class AdminDashboardController : Controller
 
     public async Task<IActionResult> DownloadReport(List<Pet> model)
     {
-        model = await _context.Pets.Include(p => p.CurrentFosterAssignment).ThenInclude(fa => fa.Foster).ToListAsync();
+        model = await _context.Pets.Include(p => p.CurrentFosterAssignment).ThenInclude(fa => fa.Foster).Include(p => p.Details).ToListAsync();
         StringBuilder csv = new StringBuilder();
         csv.AppendLine("ID,Name,FosterParent,Species,Breed,DateOfBirth,Gender,Weight,Color,Temperament,DateArrived,Bio,Status,AdoptionFee");
         foreach (var pet in model)
