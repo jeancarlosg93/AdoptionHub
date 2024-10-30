@@ -3,6 +3,7 @@ using AdoptionHub.Filters;
 using AdoptionHub.Models;
 using AdoptionHub.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Text;
@@ -44,13 +45,27 @@ public class AdminDashboardController : Controller
     [HttpGet]
     public async Task<IActionResult> EditPet(int id)
     {
+        //options for status dropdown
+        var statusOptions = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "Available", Text = "Available" },
+            new SelectListItem { Value = "Fostered", Text = "Fostered" },
+            new SelectListItem { Value = "Adopted", Text = "Adopted" }
+        };
+
+
         PetEditViewModel model = new PetEditViewModel();
         model.Pet = await _context.Pets.Include(p => p.CurrentFosterAssignment).Include(p => p.Details).Where(p => p.Id == id).FirstOrDefaultAsync();
         if (model.Pet == null)
         {
             model.Pet = new Pet();
+            model.Pet.Status = "Available";
         }
-
+        else
+        {
+            statusOptions.FirstOrDefault(option => option.Value == model.Pet?.Status).Selected = true;
+        }
+        ViewBag.StatusOptions = statusOptions;
         model.Users = await _context.Users.ToListAsync();
         return View(model);
     }

@@ -77,9 +77,12 @@
 
     <div class="form-group">
         <label asp-for="Pet.Status" class="control-label"></label>
-        <input asp-for="Pet.Status" class="form-control" />
+        <select asp-for="Pet.Status" class="form-control" asp-items="ViewBag.StatusOptions">
+          
+        </select>
         <span asp-validation-for="Pet.Status" class="text-danger"></span>
     </div>
+
 
     <div class="form-group">
         <label asp-for="Pet.Details.AdoptionFee" class="control-label"></label>
