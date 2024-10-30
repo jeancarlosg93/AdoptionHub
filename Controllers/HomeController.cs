@@ -31,7 +31,8 @@ namespace AdoptionHub.Controllers
         {
             List<UserDashboardViewModel> model = new List<UserDashboardViewModel>();
 
-            var petsQuery = _context.Pets.Include(pet => pet.Details).AsQueryable();
+            var petsQuery = _context.Pets.Include(pet => pet.Details)
+                            .Include(pet => pet.Petimages).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(viewModel.Species))
             {
@@ -114,6 +115,7 @@ namespace AdoptionHub.Controllers
                         ? (DateTime.Now.Year - pet.Details.DateOfBirth.Value.Year).ToString()
                         : "Unknown",
                     Temperament = pet.Details.Temperament,
+                    ImageUrl = pet.Petimages.FirstOrDefault()?.ImageUrl
                 });
             }
 
@@ -122,7 +124,9 @@ namespace AdoptionHub.Controllers
 
         public IActionResult Details(int id)
         {
-            Pet pet = _context.Pets.Include(p => p.Details).FirstOrDefault(p => p.Id == id);
+            Pet pet = _context.Pets.Include(p => p.Details)
+                    .Include(p => p.Petimages)
+                    .FirstOrDefault(p => p.Id == id);
             
           return View(pet);
         }
