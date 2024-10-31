@@ -1,6 +1,8 @@
 ﻿using AdoptionHub.Contexts;
 using AdoptionHub.Filters;
 using AdoptionHub.Models;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,13 +11,20 @@ namespace AdoptionHub.Controllers
     [RoleAuthorize("foster")]
     public class FosterUpdateInfoController : Controller
     {
-
         private readonly ApplicationDbContext _context;
+        private readonly Cloudinary _cloudinary;
 
-        public FosterUpdateInfoController(ApplicationDbContext context)
+        public FosterUpdateInfoController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            var account = new Account(
+                configuration["Cloudinary:CloudName"],
+                configuration["Cloudinary:ApiKey"],
+                configuration["Cloudinary:ApiSecret"]);
+
+            _cloudinary = new Cloudinary(account);
         }
+
         public IActionResult Index(int petId)
         {
             FosterUpdateInfoViewModel model = new FosterUpdateInfoViewModel();
@@ -51,7 +60,7 @@ namespace AdoptionHub.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdatePetInfo(FosterUpdateInfoViewModel model, IFormFile newImage)
+        public IActionResult UpdatePetInfo(FosterUpdateInfoViewModel model,string cloudinaryUrl)
         {
             var pet = _context.Pets.Include(pet => pet.Details).Where(pet => pet.Id == model.Id).First();
 
@@ -60,33 +69,25 @@ namespace AdoptionHub.Controllers
                 // Update pet bio
                 pet.Details.Bio = model.Bio;
                 _context.Pets.Update(pet);
-                _context.SaveChanges();
 
                 // Handle new image upload
-                if (newImage != null && newImage.Length > 0)
+                if (!string.IsNullOrEmpty(cloudinaryUrl))
                 {
-                    var filePath = Path.Combine("wwwroot/images", newImage.FileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        newImage.CopyTo(stream); //save uploaded file
-                    }
-
-                    //save image info to database
                     var petImage = new Petimage
                     {
                         PetId = pet.Id,
-                        ImageUrl = $"/images/{newImage.FileName}"
+                        ImageUrl = cloudinaryUrl
                     };
                     _context.Petimages.Add(petImage);
-                    _context.SaveChanges();
+
                 }
+                _context.SaveChanges();
+
             }
 
             // Redirect back to foster dashboard
             return RedirectToAction("Index", "FosterDashboard");
         }
-
-
 
 
         //public IActionResult Index(int petId)
@@ -173,6 +174,5 @@ namespace AdoptionHub.Controllers
         //    }
         //    //redirect back to foster dashboard
         //    return RedirectToAction("Index", "FosterDashboard");
-
     }
 }

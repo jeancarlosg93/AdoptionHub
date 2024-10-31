@@ -1,12 +1,7 @@
 ﻿@model AdoptionHub.Models.FosterUpdateInfoViewModel
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Pet Info</title>
-    <style>
+
+<style>
         .container {
             padding: 20px;
             max-width: 900px;
@@ -87,52 +82,62 @@
             color: #fff;
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Update Information for @Model.Name</h1>
 
-        <form asp-action="UpdatePetInfo" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="Id" value="@Model.Id"/>
-            <div class="form-section">
-                <h3>Bio:</h3>
-                <textarea name="Bio" placeholder="Update bio here..." rows="4">@Model.Bio</textarea>
-            </div>
+<div class="container">
+    <h1>Update Information for @Model.Name</h1>
 
-            <div class="form-section">
-                <h3>Upload Image:</h3>
-                <input type="file" name="newImage" accept="image/*" />
-            </div>
+    <form asp-action="UpdatePetInfo" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="Id" value="@Model.Id"/>
+        <div class="form-section">
+            <h3>Bio:</h3>
+            <textarea name="Bio" placeholder="Update bio here..." rows="4">@Model.Bio</textarea>
+        </div>
 
-            <div class="form-section">
-                <h3>Appointments:</h3>
-                <div class="appointments">
-                    <ul>
-                        @foreach (var date in Model.ApptDate)
-                        {
-                            //check this line
-                            <li>Date: @date?.ToString("yyyy-MM-dd")</li>
-                        }
-                    </ul>
-                    <ul>
-                        @foreach (var reason in Model.ApptReason)
-                        {
-                            <li>Reason: @reason</li>
-                        }
-                    </ul>
+        <div class="form-section">
+            <div class="form-group">
+                <label class="control-label">Upload Images</label>
+                <div>
+                    <button id="upload_widget" type="button" class="btn btn-primary">
+                        Upload Images
+                    </button>
+                    
+                </div>
+                <div id="imagePreview" class="mt-2 d-flex gap-2 flex-wrap">
+                    @foreach (var image in Model.ImageUrl)
+                    {
+                        <img src="@image" class="rounded shadow-sm" style="max-width: 200px;"/>
+                    }
                 </div>
             </div>
-
-            <button type="submit" class="submit-btn">Update</button>
-        </form>
-
-        <div class="form-section images">
-            <h3>Images:</h3>
-            @foreach (var imageUrl in Model.ImageUrl)
-            {
-                <img src="@imageUrl" alt="Pet Image" />
-            }
         </div>
+
+        <div class="form-section">
+            <h3>Appointments:</h3>
+            <div class="appointments">
+                <ul>
+                    @foreach (var date in Model.ApptDate)
+                    {
+                        //check this line
+                        <li>Date: @date?.ToString("yyyy-MM-dd")</li>
+                    }
+                </ul>
+                <ul>
+                    @foreach (var reason in Model.ApptReason)
+                    {
+                        <li>Reason: @reason</li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Update</button>
+    </form>
+
+    <div class="form-section images">
+        <h3>Images:</h3>
+        @foreach (var imageUrl in Model.ImageUrl)
+        {
+            <img src="@imageUrl" alt="Pet Image"/>
+        }
     </div>
-</body>
-</html>
+</div>

@@ -20,20 +20,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form class="p-2 p-md-5 border rounded-3 bg-light" asp-action="LoginMethod"
-                  asp-controller="Login" method="post">
-                <div class="form-floating mb-3">
-                    <input type="text" name="Username" class="form-control" id="Username" placeholder="User Name">
-                    <label for="Username">User Name</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="password" name="Password" class="form-control" id="Password" placeholder="Password">
-                    <label for="Password">Password</label>
-                </div>
-                <div class="modal-footer d-flex justify-content-center">
-                    <button class="w-75 btn btn-lg btn-primary" type="submit">Log in</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -160,10 +146,11 @@
         </ul>
     </footer>
 </div>
-
+<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
+<script src="js/UploadWidget.js"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
