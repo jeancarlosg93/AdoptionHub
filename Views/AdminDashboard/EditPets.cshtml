@@ -28,7 +28,7 @@
             {
                 <tr>
                     <td>@pet.Details.Name</td>
-                    <td>@(pet.CurrentFosterAssignment != null ? pet.CurrentFosterAssignment?.Foster.FullName : "Not fostered")</td>
+                    <td>@(pet.CurrentFosterAssignment?.Foster != null ? pet.CurrentFosterAssignment?.Foster.FullName : "Not fostered")</td>
                     <td>@pet.Details.Species</td>
                     <td>@pet.Details.Breed</td>
                     <td>@pet.Details.DateOfBirth?.ToString("yyyy-MM-dd")</td>

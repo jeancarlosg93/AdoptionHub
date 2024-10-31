@@ -79,7 +79,7 @@ public class AdminDashboardController : Controller
         {
             model.Pet.CurrentFosterAssignment = null;
         }
-        var pet = await _context.Pets.Include(p => p.Details).Where(p => p.Id == model.Pet.Id).FirstOrDefaultAsync();
+        var pet = await _context.Pets.Include(p => p.Details).Include(p => p.CurrentFosterAssignment).Where(p => p.Id == model.Pet.Id).FirstOrDefaultAsync();
 
         //update pet if pet exists
         if (pet != null)
@@ -104,7 +104,7 @@ public class AdminDashboardController : Controller
 
             //create new foster assignment if foster changed
             var newFoster = await _context.Users.FindAsync(model.Pet?.CurrentFosterAssignment?.FosterId);
-            if (newFoster?.Id != pet.CurrentFosterAssignment?.FosterId)
+            if (newFoster != null && newFoster?.Id != pet.CurrentFosterAssignment?.FosterId)
             {
                 var newFosterAssignment = new Fosterassignment
                 {
@@ -114,6 +114,10 @@ public class AdminDashboardController : Controller
                 };
                 pet.CurrentFosterAssignment = newFosterAssignment;
                 await _context.Fosterassignments.AddAsync(newFosterAssignment);
+            }
+            else if (newFoster == null)
+            {
+                pet.CurrentFosterAssignment = null;
             }
             await _context.SaveChangesAsync();
             return RedirectToAction("EditPets");
