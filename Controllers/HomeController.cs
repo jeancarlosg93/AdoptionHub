@@ -46,59 +46,88 @@ namespace AdoptionHub.Controllers
 
             if (!string.IsNullOrWhiteSpace(viewModel.Age))
             {
-                petsQuery = petsQuery.Where(pet => GetAgeCategory((DateTime)pet.Details.DateOfBirth) == viewModel.Age);
+                DateTime now = DateTime.Now;
+                //petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth != null);
+
+                //if (viewModel.Age.Equals("Puppy"))
+                //{
+                //    DateTime sixMonthsAgo = now.AddMonths(-6);
+                //    petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth >= sixMonthsAgo);
+                //}
+                //else if (viewModel.Age.Equals("Young"))
+                //{
+                //    DateTime sixMonthsAgo = now.AddMonths(-6);
+                //    DateTime twoYearsAgo = now.AddYears(-2);
+                //    petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth < sixMonthsAgo && pet.Details.DateOfBirth >= twoYearsAgo);
+                //}
+
+                //else if (viewModel.Age.Equals("Adult"))
+                //{
+                //    DateTime twoYearsAgo = now.AddYears(-2);
+                //    DateTime sevenYearsAgo = now.AddYears(-7);
+                //    petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth < twoYearsAgo && pet.Details.DateOfBirth >= sevenYearsAgo);
+                //}
+
+                //else if (viewModel.Age.Equals("Senior"))
+                //{
+                //    DateTime sevenYearsAgo = DateTime.Now.AddYears(-7);
+                //    petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth < sevenYearsAgo);
+                //}
+
+                DateTime sixMonthsAgo = now.AddMonths(-6);
+                DateTime twoYearsAgo = now.AddYears(-2);
+                DateTime sevenYearsAgo = now.AddYears(-7);
+
+                switch (viewModel.Age)
+                {
+                    case "Puppy":
+                        petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth >= sixMonthsAgo);
+                        break;
+                    case "Young":
+                        petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth < sixMonthsAgo && pet.Details.DateOfBirth >= twoYearsAgo);
+                        break;
+                    case "Adult":
+                        petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth < twoYearsAgo && pet.Details.DateOfBirth >= sevenYearsAgo);
+                        break;
+                    case "Senior":
+                        petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth < sevenYearsAgo);
+                        break;
+                }
             }
+
             //if (!string.IsNullOrWhiteSpace(viewModel.Age))
             //{
-            //    if (viewModel.Age.Equals("Puppy"))
-            //    {
-            //        DateTime sixMonthsAgo = DateTime.Now.AddMonths(-6);
-            //        petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth > sixMonthsAgo);
-            //    }
-            //    else if (viewModel.Age.Equals("Young"))
-            //    {
-            //        DateTime sixMonthsAgo = DateTime.Now.AddMonths(-6);
-            //        DateTime twoYearsAgo = DateTime.Now.AddYears(-2);
-            //        petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth >= sixMonthsAgo && pet.Details.DateOfBirth < twoYearsAgo);
-            //    }
-
-            //    else if (viewModel.Age.Equals("Adult"))
-            //    {
-            //        DateTime twoYearsAgo = DateTime.Now.AddYears(-2);
-            //        DateTime eightYearsAgo = DateTime.Now.AddYears(-8);
-            //        petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth >= twoYearsAgo && pet.Details.DateOfBirth < eightYearsAgo);
-            //    }
-
-            //    else if (viewModel.Age.Equals("Senior"))
-            //    {
-            //        DateTime eightYearsAgo = DateTime.Now.AddYears(-8);
-            //        petsQuery = petsQuery.Where(pet => pet.Details.DateOfBirth >= eightYearsAgo);
-            //    }
+            //    petsQuery = petsQuery.Where(pet => GetAgeCategory((DateTime)pet.Details.DateOfBirth) == viewModel.Age);
             //}
 
             if (!string.IsNullOrWhiteSpace(viewModel.Size))
             {
-                if (viewModel.Size.Equals("Small"))
-                {
-                    petsQuery = petsQuery.Where(pet => pet.Details.Weight >= 0 && pet.Details.Weight <= 25);
-                }
+                //petsQuery = petsQuery.Where(pet =>
+                //    (viewModel.Size == "Small" && pet.Details.Weight >= 0 && pet.Details.Weight <= 25) ||
+                //    (viewModel.Size == "Medium" && pet.Details.Weight > 25 && pet.Details.Weight <= 50) ||
+                //    (viewModel.Size == "Large" && pet.Details.Weight > 50 && pet.Details.Weight <= 90) ||
+                //    (viewModel.Size == "Extra Large" && pet.Details.Weight > 90)
+                //    //(pet.Details.Weight == null)
+                //);
+                
+                //petsQuery = petsQuery.Where(pet => pet.Details.Weight.HasValue); // Check if any pets have a weight
 
-                else if (viewModel.Size.Equals("Medium"))
+                switch (viewModel.Size)
                 {
-                    petsQuery = petsQuery.Where(pet => pet.Details.Weight >= 26 && pet.Details.Weight <= 50);
-                }
-
-                else if (viewModel.Size.Equals("Large"))
-                {
-                    petsQuery = petsQuery.Where(pet => pet.Details.Weight >= 51 && pet.Details.Weight <= 90);
-                }
-
-                else if (viewModel.Size.Equals("Extra Large"))
-                {
-                    petsQuery = petsQuery.Where(pet => pet.Details.Weight > 90);
+                    case "Small":
+                        petsQuery = petsQuery.Where(pet => pet.Details.Weight.HasValue && pet.Details.Weight.Value <= 25);
+                        break;
+                    case "Medium":
+                        petsQuery = petsQuery.Where(pet => pet.Details.Weight.HasValue && pet.Details.Weight.Value > 25 && pet.Details.Weight.Value <= 50);
+                        break;
+                    case "Large":
+                        petsQuery = petsQuery.Where(pet => pet.Details.Weight.HasValue && pet.Details.Weight.Value > 50 && pet.Details.Weight.Value <= 90);
+                        break;
+                    case "Extra Large":
+                        petsQuery = petsQuery.Where(pet => pet.Details.Weight.HasValue && pet.Details.Weight.Value > 90);
+                        break;
                 }
             }
-           
 
             if (!string.IsNullOrWhiteSpace(viewModel.Gender))
             {
@@ -107,26 +136,26 @@ namespace AdoptionHub.Controllers
 
             var pets = petsQuery.ToList();
 
-            if (pets.Any())
+            if (pets == null || pets.Count == 0)
             {
-                foreach (var pet in pets)
-                {
-                    model.Add(new UserDashboardViewModel
-                    {
-                        Id = pet.Id,
-                        Name = pet.Details.Name,
-                        Breed = pet.Details.Breed,
-                        Gender = pet.Details.Gender == "F" ? "Female" : "Male",
-                        AgeCategory = GetAgeCategory((DateTime)pet.Details.DateOfBirth),
-                        Temperament = pet.Details.Temperament,
-                        ImageUrl = pet.Petimages.FirstOrDefault()?.ImageUrl
-                    });
-                }
-            } else
-            {
-                ViewBag.NoPetsFoundMessage = "No pets match your search criteria. Please try again with other filters.";
+                ViewBag.NoPetsFoundMessage = "No pets found matching your criteria.";
+                return View(model);
             }
 
+            foreach (var pet in pets)
+            {
+                model.Add(new UserDashboardViewModel
+                {
+                    Id = pet.Id,
+                    Name = pet.Details.Name,
+                    Breed = pet.Details.Breed,
+                    Gender = pet.Details.Gender == "F" ? "Female" : "Male",
+                    AgeCategory = GetAgeCategory((DateTime)pet.Details.DateOfBirth),
+                    Temperament = pet.Details.Temperament,
+                    ImageUrl = pet.Petimages.FirstOrDefault()?.ImageUrl
+                });
+            }
+  
             return View(model);
         }
 
