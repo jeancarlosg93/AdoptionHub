@@ -1,6 +1,8 @@
 ﻿using AdoptionHub.Contexts;
 using AdoptionHub.Filters;
 using AdoptionHub.Models;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,13 +11,20 @@ namespace AdoptionHub.Controllers
     [RoleAuthorize("foster")]
     public class FosterUpdateInfoController : Controller
     {
-
         private readonly ApplicationDbContext _context;
+        private readonly Cloudinary _cloudinary;
 
-        public FosterUpdateInfoController(ApplicationDbContext context)
+        public FosterUpdateInfoController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            var account = new Account(
+                configuration["Cloudinary:CloudName"],
+                configuration["Cloudinary:ApiKey"],
+                configuration["Cloudinary:ApiSecret"]);
+
+            _cloudinary = new Cloudinary(account);
         }
+
         public IActionResult Index(int petId)
         {
             FosterUpdateInfoViewModel model = new FosterUpdateInfoViewModel();
@@ -37,8 +46,7 @@ namespace AdoptionHub.Controllers
 
                 foreach (var appointment in pet.Vetappointments)
                 {
-                    model.ApptDate.Add(appointment.ApptDate);
-                    model.ApptReason.Add(appointment.ApptReason);
+                    model.AddAppointment(appointment.ApptDate, appointment.ApptReason);
                 }
 
                 foreach (var image in pet.Petimages)
@@ -51,128 +59,50 @@ namespace AdoptionHub.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdatePetInfo(FosterUpdateInfoViewModel model, IFormFile newImage)
+        public IActionResult UpdatePetInfo(FosterUpdateInfoViewModel model, List<string> cloudinaryUrl)
         {
-            var pet = _context.Pets.Include(pet => pet.Details).Where(pet => pet.Id == model.Id).First();
+            var pet = _context.Pets.Include(pet => pet.Details).First(pet => pet.Id == model.Id);
 
-            if (pet != null)
+            // Update pet bio
+            pet.Details!.Bio = model.Bio;
+            _context.Pets.Update(pet);
+
+            foreach (var image in cloudinaryUrl)
             {
-                // Update pet bio
-                pet.Details.Bio = model.Bio;
-                _context.Pets.Update(pet);
-                _context.SaveChanges();
-
-                // Handle new image upload
-                if (newImage != null && newImage.Length > 0)
+                var petImage = new Petimage
                 {
-                    var filePath = Path.Combine("wwwroot/images", newImage.FileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        newImage.CopyTo(stream); //save uploaded file
-                    }
-
-                    //save image info to database
-                    var petImage = new Petimage
-                    {
-                        PetId = pet.Id,
-                        ImageUrl = $"/images/{newImage.FileName}"
-                    };
-                    _context.Petimages.Add(petImage);
-                    _context.SaveChanges();
-                }
+                    PetId = pet.Id,
+                    ImageUrl = image
+                };
+                _context.Petimages.Add(petImage);
             }
 
-            // Redirect back to foster dashboard
+            _context.SaveChanges();
+
             return RedirectToAction("Index", "FosterDashboard");
         }
 
+        [HttpPost]
+        public IActionResult DeleteImage(string imageUrl)
+        {
+            try
+            {
+                var image = _context.Petimages.FirstOrDefault(image => image.ImageUrl.Contains(imageUrl));
+                if (image == null)
+                {
+                    return Json(new { success = false, message = "Image not found" });
+                }
 
-
-
-        //public IActionResult Index(int petId)
-        //{
-        //    FosterUpdateInfoViewModel model = new FosterUpdateInfoViewModel();
-        //    model.ImageUrl = new List<string>();
-        //    model.ApptDate = new List<DateTime>();
-        //    model.ApptReason = new List<string>();
-
-        //using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //{
-        //    connection.Open();
-        //    string sql = "SELECT p.*, va.apptDate, va.apptReason, pi.imageUrl FROM Pets p LEFT JOIN vetAppointments va ON p.id = va.petId LEFT JOIN PetImages pi ON p.id = pi.petId WHERE p.Id = @petId;";
-
-        //    using (MySqlCommand command = new MySqlCommand(sql, connection))
-        //    {
-        //        command.Parameters.AddWithValue("@petId", petId);
-
-        //        using (MySqlDataReader reader = command.ExecuteReader())
-        //        {
-        //            if (reader.Read())
-        //            {
-        //                model.Id = (int)reader["id"];
-        //                model.Name = reader["name"].ToString();
-        //                model.Bio = reader["bio"].ToString();
-
-        //                do
-        //                {
-        //                    if (reader["imageUrl"] != DBNull.Value)
-        //                    {
-        //                        model.ImageUrl.Add(reader["imageUrl"].ToString());
-        //                    }
-        //                    if (reader["apptDate"] != DBNull.Value)
-        //                    {
-        //                        model.ApptDate.Add(reader.GetDateTime("apptDate"));
-        //                    }
-        //                    if (reader["apptReason"] != DBNull.Value)
-        //                    {
-        //                        model.ApptReason.Add(reader["apptReason"].ToString());
-        //                    }  
-        //                } 
-        //                while (reader.Read());
-        //            }
-        //        }
-        //    }
-        //}
-        //return View(model);
-        // }
-
-        //[HttpPost]
-        //public IActionResult UpdatePetInfo(FosterUpdateInfoViewModel model, IFormFile newImage)
-        //{
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        connection.Open();
-
-        //        //update pet bio in the database
-        //        string updateSql = "UPDATE Pets SET bio = @bio WHERE id = @petId";
-        //        using (MySqlCommand command = new MySqlCommand(updateSql, connection))
-        //        {
-        //            command.Parameters.AddWithValue("@bio", model.Bio);
-        //            command.Parameters.AddWithValue("@petId", model.Id);
-        //            command.ExecuteNonQuery();
-        //        }
-
-        //        //image
-        //        if (newImage != null && newImage.Length > 0)
-        //        {
-        //            var filePath = Path.Combine("wwwroot/images", newImage.FileName);
-        //            using (var stream = new FileStream(filePath, FileMode.Create))
-        //            {
-        //                newImage.CopyTo(stream); //save uploaded file
-        //            }
-
-        //            //insert new image into the database
-        //            string insertImageSql = "INSERT INTO PetImages (PetId, ImageUrl) VALUES (@petId, @imageUrl)";
-        //            using (MySqlCommand command = new MySqlCommand(insertImageSql, connection))
-        //            {
-        //                command.Parameters.AddWithValue("@petId", model.Id);
-        //                command.Parameters.AddWithValue("@imageUrl", $"/images/{newImage.FileName}");
-        //                command.ExecuteNonQuery();
-        //            }
-        //        }
-        //    }
-        //    //redirect back to foster dashboard
-        //    return RedirectToAction("Index", "FosterDashboard");
-
+                _context.Petimages.Remove(image);
+                _context.SaveChanges();
+        
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Json(new { success = false, message = e.Message });
+            }
+        }
     }
 }
