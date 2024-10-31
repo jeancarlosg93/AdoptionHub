@@ -1,28 +1,15 @@
 ﻿const cloudName = "dzgrquvrs";
-const uploadPreset = "Default"; // replace with your own upload preset
-
-// Remove the comments from the code below to add
-// additional functionality.
-// Note that these are only a few examples, to see
-// the full list of possible parameters that you
-// can add see:
-//   https://cloudinary.com/documentation/upload_widget_reference
+const uploadPreset = "Default";
 
 const myWidget = cloudinary.createUploadWidget(
     {
         cloudName: cloudName,
         uploadPreset: uploadPreset,
-        cropping: true, //add a cropping step
-        // showAdvancedOptions: true,  //add advanced options (public_id and tag)
-        sources: ["local"], // restrict the upload sources to URL and local files
-        // multiple: false,  //restrict upload to a single file
-        // folder: "user_images", //upload files to the specified folder
-        // tags: ["users", "profile"], //add the given tags to the uploaded files
-        // context: {alt: "user_uploaded"}, //add the given context data to the uploaded files
-        // clientAllowedFormats: ["images"], //restrict uploading to image files only
-        maxImageFileSize: 2000000,  //restrict file size to less than 2MB
-        // maxImageWidth: 2000, //Scales the image down to a width of 2000 pixels before uploading
-        // theme: "purple", //change to a purple theme
+        cropping: true,
+        sources: ["local"],
+        multiple: true,
+        maxImageFileSize: 2000000,
+        maxImageWidth: 2000,
     },
     (error, result) => {
         if (!error && result && result.event === "success") {
@@ -33,12 +20,46 @@ const myWidget = cloudinary.createUploadWidget(
             input.value = result.info.secure_url;
             document.querySelector('form').appendChild(input);
 
-            // Display the uploaded image preview
+            // Create the preview card structure
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
+
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card h-100';
+
+            // Create the image element
             const preview = document.createElement('img');
             preview.src = result.info.thumbnail_url;
-            preview.className = 'mt-2 rounded shadow-sm';
-            preview.style.maxWidth = '200px';
-            document.querySelector('#imagePreview').appendChild(preview);
+            preview.className = 'card-img-top';
+            preview.alt = 'Preview Image';
+            preview.style.objectFit = 'cover';
+            preview.style.height = '200px';
+
+            // Create card body for the remove button
+            const cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+
+            // Create remove button
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn btn-sm btn-outline-danger w-100';
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = function() {
+                // Remove the hidden input as well when removing the preview
+                input.remove();
+                colDiv.remove();
+            };
+
+            // Assemble the card structure
+            cardDiv.appendChild(preview);
+            cardBody.appendChild(removeButton);
+            cardDiv.appendChild(cardBody);
+            colDiv.appendChild(cardDiv);
+
+            // Insert the new preview before the upload button
+            const imagePreview = document.querySelector('#imagePreview');
+            const uploadButton = imagePreview.querySelector('.mb-3');
+            imagePreview.insertBefore(colDiv, uploadButton);
         }
     }
 );
