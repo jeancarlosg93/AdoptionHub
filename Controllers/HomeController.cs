@@ -175,6 +175,16 @@ namespace AdoptionHub.Controllers
             pet.Details.Gender = pet.Details.Gender == "F" ? "Female" : "Male";
             ViewData["ExactAge"] = CalculateAge((DateTime)pet.Details.DateOfBirth);
 
+            if (pet.Petimages.Count == 0)
+            {
+                var imageUrl = pet.Petimages != null && pet.Petimages.Any()
+                    ? pet.Petimages.First().ImageUrl
+                    : "/images/exampleImg/noimage.jpg";
+                
+                pet.Petimages.Add(new Petimage() { ImageUrl = imageUrl });
+            }
+
+
             return View(pet);
         }
 
