@@ -8,4 +8,9 @@
   "ConnectionStrings": {
     "DefaultConnection": "Your connection here"
   }
+  "Cloudinary": {
+      "CloudName": {yourCloudNamehere},
+      "ApiKey":{yourapikeyhere},
+      "ApiSecret":{yourApiSecrethere},
+  },
 }
