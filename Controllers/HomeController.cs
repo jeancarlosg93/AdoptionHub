@@ -107,15 +107,20 @@ namespace AdoptionHub.Controllers
 
             foreach (var pet in pets)
             {
+                var imageUrl = pet.Petimages != null && pet.Petimages.Any()
+                    ? pet.Petimages.First().ImageUrl
+                    : "/images/exampleImg/noimage.jpg";
+                
                 model.Add(new UserDashboardViewModel
                 {
+                    
                     Id = pet.Id,
                     Name = pet.Details.Name,
                     Breed = pet.Details.Breed,
                     Gender = pet.Details.Gender == "F" ? "Female" : "Male",
                     AgeCategory = GetAgeCategory((DateTime)pet.Details.DateOfBirth),
                     Temperament = pet.Details.Temperament,
-                    ImageUrl = pet.Petimages.FirstOrDefault()?.ImageUrl
+                    ImageUrl = imageUrl
                 });
             }
   
