@@ -52,10 +52,9 @@ public class AdminDashboardController : Controller
             new SelectListItem { Value = "Fostered", Text = "Fostered" },
             new SelectListItem { Value = "Adopted", Text = "Adopted" }
         };
-
-
         PetEditViewModel model = new PetEditViewModel();
         model.Pet = await _context.Pets.Include(p => p.CurrentFosterAssignment).Include(p => p.Details).Where(p => p.Id == id).FirstOrDefaultAsync();
+
         if (model.Pet == null)
         {
             model.Pet = new Pet();
@@ -81,6 +80,7 @@ public class AdminDashboardController : Controller
         }
         var pet = await _context.Pets.Include(p => p.Details).Include(p => p.CurrentFosterAssignment).Where(p => p.Id == model.Pet.Id).FirstOrDefaultAsync();
 
+
         //update pet if pet exists
         if (pet != null)
         {
@@ -89,7 +89,7 @@ public class AdminDashboardController : Controller
 
             foreach (var property in petType.GetProperties())
             {
-                if (property.Name == "Id" || property.Name == "FosterParent" || property.Name == "CurrentFosterAssignment")
+                if (property.Name == "Id" || property.Name == "FosterParent" || property.Name == "FosterParentId" || property.Name == "CurrentFosterAssignment" || property.Name == "CurrentFosterAssignmentId" || property.Name == "Fosterassignments")
                     continue;
 
                 var newValue = property.GetValue(modelPet);
@@ -101,23 +101,35 @@ public class AdminDashboardController : Controller
                     property.SetValue(pet, newValue);
                 }
             }
-
             //create new foster assignment if foster changed
             var newFoster = await _context.Users.FindAsync(model.Pet?.CurrentFosterAssignment?.FosterId);
-            if (newFoster != null && newFoster?.Id != pet.CurrentFosterAssignment?.FosterId)
+            if (newFoster?.Id != pet.CurrentFosterAssignment?.FosterId)
+
             {
-                var newFosterAssignment = new Fosterassignment
+                //if pet was previously fostered, set foster assignment end date to now
+                if (pet.CurrentFosterAssignment != null)
                 {
-                    Foster = newFoster,
-                    Pet = pet,
-                    StartDate = DateOnly.FromDateTime(DateTime.Now)
-                };
-                pet.CurrentFosterAssignment = newFosterAssignment;
-                await _context.Fosterassignments.AddAsync(newFosterAssignment);
-            }
-            else if (newFoster == null)
-            {
-                pet.CurrentFosterAssignment = null;
+                    pet.CurrentFosterAssignment.EndDate = DateOnly.FromDateTime(DateTime.Now);
+                }
+                //add new foster assignment if foster was selected
+                if (newFoster != null)
+                {
+                    var newFosterAssignment = new Fosterassignment
+                    {
+                        Foster = newFoster,
+                        Pet = pet,
+                        StartDate = DateOnly.FromDateTime(DateTime.Now)
+                    };
+                    pet.CurrentFosterAssignment = newFosterAssignment;
+                    await _context.Fosterassignments.AddAsync(newFosterAssignment);
+
+                }
+                //remove foster assignment if no foster selected
+                else
+                {
+                    pet.CurrentFosterAssignment = null;
+                }
+
             }
             await _context.SaveChangesAsync();
             return RedirectToAction("EditPets");
@@ -125,7 +137,7 @@ public class AdminDashboardController : Controller
         //create pet if pet doesn't exist
         else if (model.Pet != null)
         {
-            var foster = await _context.Users.FindAsync(model.Pet?.FosterParent?.Id);
+            var foster = await _context.Users.FindAsync(model.Pet?.CurrentFosterAssignment?.FosterId);
             if (foster != null)
             {
                 var newFosterAssignment = new Fosterassignment
@@ -139,11 +151,12 @@ public class AdminDashboardController : Controller
             }
             await _context.Pets.AddAsync(model.Pet);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("EditPets");
         }
 
         return View(model);
     }
+
 
     [HttpPost]
     public IActionResult GenerateSignupCode()
