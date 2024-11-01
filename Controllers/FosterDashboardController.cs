@@ -21,27 +21,31 @@ public class FosterDashboardController : Controller
 
     public IActionResult Index(List<FosterDashboardViewModel> model)
     {
-
         // Get the current username from the session
         var username = HttpContext.Session.GetString("userName");
 
-        // Query the database to get the list of pets fostered by the current user
-        var fosteredPets = (from p in _context.Pets.Include(p => p.Details)
-                                //join d in _context.PetDetails on p.Id equals d.Id
-                            join fa in _context.Fosterassignments on p.Id equals fa.PetId
-                            join u in _context.Users on fa.FosterId equals u.Id
-                            where u.Username == username
-                            select new FosterDashboardViewModel
-                            {
-                                Id = p.Id,
-                                Name = p.Details.Name,
-                                Species = p.Details.Species,
-                                Images = _context.Petimages
-                                                .Where(pi => pi.PetId == p.Id)
-                                                .Select(pi => pi.ImageUrl).ToList()
-                            }).ToList();
+        var pets =  _context.Pets
+            .Include(p => p.Details)
+            .Include(p => p.Fosterassignments)
+            .ThenInclude(fa => fa.Foster)
+            .Include(p => p.Petimages)
+            .Where(p => p.Fosterassignments.Any(fa => fa.Foster.Username == username))
+            .ToList();
 
-        model = fosteredPets;
+        foreach (var pet in pets)
+        {
+            var imageUrl = pet.Petimages != null && pet.Petimages.Any()
+                ? pet.Petimages.First().ImageUrl
+                : "/images/exampleImg/noimage.jpg";
+
+            model.Add(new FosterDashboardViewModel
+            {
+                Id = pet.Id,
+                Name = pet.Details.Name,
+                Species = pet.Details.Species,
+                Images = new List<string> { imageUrl }
+            });
+        }
 
         return View(model);
     }
