@@ -43,6 +43,9 @@ namespace AdoptionHub.Controllers
                 model.Id = pet.Id;
                 model.Name = pet.Details.Name;
                 model.Bio = pet.Details.Bio;
+                model.Breed = pet.Details.Breed;
+                model.Gender = pet.Details.Gender;
+                model.Temperament = pet.Details.Temperament;
 
                 foreach (var appointment in pet.Vetappointments)
                 {
