@@ -33,6 +33,9 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Veterinarian> Veterinarians { get; set; }
 
     public virtual DbSet<SignupCode> SignupCodes { get; set; }
+    
+    public virtual DbSet<LoginLog> LoginLogs { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -177,16 +180,26 @@ public partial class ApplicationDbContext : DbContext
             entity.ToTable("pets");
 
             entity.HasIndex(e => e.FosterParentId, "IX_pets_FosterParentId");
+            entity.HasIndex(e => e.CurrentFosterAssignmentId, "IX_pets_CurrentFosterAssignmentId"); // Add index for current foster assignment
 
             entity.Property(e => e.Id).HasColumnName("id");
-            
-            entity.Property(e => e.Status)
-                .HasMaxLength(15)
-                .HasColumnName("status");
+            entity.Property(e => e.Status).HasMaxLength(15).HasColumnName("status");
 
-            entity.HasOne(d => d.FosterParent).WithMany(p => p.Pets).HasForeignKey(d => d.FosterParentId);
-            entity.HasOne(d => d.Details).WithOne(p => p.Pet).HasForeignKey<PetDetail>(d => d.Id);
+            entity.HasOne(d => d.FosterParent)
+                .WithMany(p => p.Pets)
+                .HasForeignKey(d => d.FosterParentId);
+
+            entity.HasOne(d => d.Details)
+                .WithOne(p => p.Pet)
+                .HasForeignKey<PetDetail>(d => d.Id);
+
+            // Define the relationship between CurrentFosterAssignment and CurrentFosterAssignmentId
+            entity.HasOne(d => d.CurrentFosterAssignment)
+                .WithMany()
+                .HasForeignKey(d => d.CurrentFosterAssignmentId)
+                .OnDelete(DeleteBehavior.Restrict); // Optional: configure delete behavior
         });
+
 
         modelBuilder.Entity<PetDetail>(entity =>
         {
@@ -349,6 +362,26 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(30)
                 .HasColumnName("phoneNumber");
         });
+
+    modelBuilder.Entity<LoginLog>(entity =>
+    {
+        entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+        entity.ToTable("loginlogs");
+
+        entity.Property(e => e.Id)
+            .HasColumnName("id")
+            .ValueGeneratedOnAdd();
+
+        entity.Property(e => e.Date)
+            .HasColumnName("date")
+            .HasColumnType("datetime");
+
+        entity.Property(e => e.Message)
+            .IsRequired()
+            .HasMaxLength(255)
+            .HasColumnName("message");
+    });
 
         OnModelCreatingPartial(modelBuilder);
     }

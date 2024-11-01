@@ -22,7 +22,11 @@ namespace AdoptionHub.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult OurMission()
+        {
+            return View();
+        }
+        public IActionResult ContactUs()
         {
             return View();
         }

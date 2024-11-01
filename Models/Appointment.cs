@@ -20,4 +20,6 @@ public partial class Appointment
     public virtual User? FosterUser { get; set; }
 
     public virtual Pet? Pet { get; set; }
+    
+    
 }

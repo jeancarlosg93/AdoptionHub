@@ -3,6 +3,7 @@ using AdoptionHub.Filters;
 using AdoptionHub.Models;
 using AdoptionHub.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Text;
@@ -31,7 +32,7 @@ public class AdminDashboardController : Controller
 
     public async Task<IActionResult> EditPets(List<Pet> model)
     {
-        model = await _context.Pets.Include(p => p.FosterParent).Include(p => p.Details).ToListAsync();
+        model = await _context.Pets.Include(p => p.CurrentFosterAssignment).ThenInclude(fa => fa.Foster).Include(p => p.Details).ToListAsync();
         return View(model);
     }
 
@@ -44,48 +45,43 @@ public class AdminDashboardController : Controller
     [HttpGet]
     public async Task<IActionResult> EditPet(int id)
     {
+        //options for status dropdown
+        var statusOptions = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "Available", Text = "Available" },
+            new SelectListItem { Value = "Fostered", Text = "Fostered" },
+            new SelectListItem { Value = "Adopted", Text = "Adopted" }
+        };
         PetEditViewModel model = new PetEditViewModel();
-        model.Pet = await _context.Pets.Include(p => p.Details).Where(p => p.Id == id).FirstAsync();
+        model.Pet = await _context.Pets.Include(p => p.CurrentFosterAssignment).Include(p => p.Details).Where(p => p.Id == id).FirstOrDefaultAsync();
+
         if (model.Pet == null)
         {
             model.Pet = new Pet();
+            model.Pet.Status = "Available";
         }
-
+        else
+        {
+            statusOptions.FirstOrDefault(option => option.Value == model.Pet?.Status).Selected = true;
+        }
+        ViewBag.StatusOptions = statusOptions;
         model.Users = await _context.Users.ToListAsync();
         return View(model);
-    }
-
-    public async Task<IActionResult> DownloadReport(List<Pet> model)
-    {
-        model = await _context.Pets.Include(p => p.FosterParent).ToListAsync();
-        StringBuilder csv = new StringBuilder();
-        csv.AppendLine("ID,Name,FosterParent,Species,Breed,DateOfBirth,Gender,Weight,Color,Temperament,DateArrived,Bio,Status,AdoptionFee");
-        foreach (var pet in model)
-        {
-            String FosterParent;
-            if (pet.FosterParent == null)
-            {
-                FosterParent = "None";
-            }
-            else
-            {
-                FosterParent = pet.FosterParent.FullName;
-            }
-
-            csv.AppendLine($"{pet.Id},{pet.Details.Name},{FosterParent},{pet.Details.Species},{pet.Details.Breed},{pet.Details.DateOfBirth},{pet
-                .Details.Gender},{pet.Details.Weight},{pet.Details.Color},{pet.Details.Temperament},{pet.Details.DateArrived},{pet.Details.Bio},{pet.Status},{pet.Details.AdoptionFee}");
-        }
-        String date = DateTime.Now.ToString("yyyyMMddHHmm");
-
-        return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"ListOfPets{date}.csv");
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditPet(PetEditViewModel model)
     {
-        var pet = await _context.Pets.Include(p => p.Details).Where(p => p.Id == model.Pet.Id).FirstAsync();
+        //if no foster was selected in form, replace empty CurrentFosterAssignment object with null
+        if (model.Pet?.CurrentFosterAssignment?.FosterId == null)
+        {
+            model.Pet.CurrentFosterAssignment = null;
+        }
+        var pet = await _context.Pets.Include(p => p.Details).Include(p => p.CurrentFosterAssignment).Where(p => p.Id == model.Pet.Id).FirstOrDefaultAsync();
 
+
+        //update pet if pet exists
         if (pet != null)
         {
             var petType = typeof(Pet);
@@ -93,7 +89,7 @@ public class AdminDashboardController : Controller
 
             foreach (var property in petType.GetProperties())
             {
-                if (property.Name == "Id" || property.Name == "FosterParent")
+                if (property.Name == "Id" || property.Name == "FosterParent" || property.Name == "FosterParentId" || property.Name == "CurrentFosterAssignment" || property.Name == "CurrentFosterAssignmentId" || property.Name == "Fosterassignments")
                     continue;
 
                 var newValue = property.GetValue(modelPet);
@@ -105,28 +101,66 @@ public class AdminDashboardController : Controller
                     property.SetValue(pet, newValue);
                 }
             }
+            //create new foster assignment if foster changed
+            var newFoster = await _context.Users.FindAsync(model.Pet?.CurrentFosterAssignment?.FosterId);
+            if (newFoster?.Id != pet.CurrentFosterAssignment?.FosterId)
 
-            var fosterParent = await _context.Users.FindAsync(model.Pet?.FosterParent?.Id);
+            {
+                //if pet was previously fostered, set foster assignment end date to now
+                if (pet.CurrentFosterAssignment != null)
+                {
+                    pet.CurrentFosterAssignment.EndDate = DateOnly.FromDateTime(DateTime.Now);
+                }
+                //add new foster assignment if foster was selected
+                if (newFoster != null)
+                {
+                    var newFosterAssignment = new Fosterassignment
+                    {
+                        Foster = newFoster,
+                        Pet = pet,
+                        StartDate = DateOnly.FromDateTime(DateTime.Now)
+                    };
+                    pet.CurrentFosterAssignment = newFosterAssignment;
+                    await _context.Fosterassignments.AddAsync(newFosterAssignment);
 
+                }
+                //remove foster assignment if no foster selected
+                else
+                {
+                    pet.CurrentFosterAssignment = null;
+                }
 
-            pet.FosterParent = fosterParent;
-
+            }
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction("EditPets");
         }
+        //create pet if pet doesn't exist
         else if (model.Pet != null)
         {
-            var fosterParent = await _context.Users.FindAsync(model.Pet?.FosterParent?.Id);
-
-
-            model.Pet.FosterParent = fosterParent;
+            var foster = await _context.Users.FindAsync(model.Pet?.CurrentFosterAssignment?.FosterId);
+            //after model.Pet.CurrentFosterAssignemnt is used to set foster, clear CurrentFosterAssignment and save pet to avoid creating a foster assignment
+            //with no petId and so that pet will have an id to be used when creating new Fosterassignment
+            model.Pet.CurrentFosterAssignment = null;
             await _context.Pets.AddAsync(model.Pet);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            if (foster != null)
+            {
+                var newFosterAssignment = new Fosterassignment
+                {
+                    Foster = foster,
+                    Pet = model.Pet,
+                    StartDate = DateOnly.FromDateTime(DateTime.Now)
+                };
+                model.Pet.CurrentFosterAssignment = newFosterAssignment;
+                await _context.Fosterassignments.AddAsync(newFosterAssignment);
+            }
+            await _context.SaveChangesAsync();
+            return RedirectToAction("EditPets");
         }
 
         return View(model);
     }
+
 
     [HttpPost]
     public IActionResult GenerateSignupCode()
@@ -134,6 +168,31 @@ public class AdminDashboardController : Controller
         string newCode = _signupCodeService.GenerateSignupCode();
 
         return Json(new { code = newCode });
+    }
+
+    public async Task<IActionResult> DownloadReport(List<Pet> model)
+    {
+        model = await _context.Pets.Include(p => p.CurrentFosterAssignment).ThenInclude(fa => fa.Foster).Include(p => p.Details).ToListAsync();
+        StringBuilder csv = new StringBuilder();
+        csv.AppendLine("ID,Name,FosterParent,Species,Breed,DateOfBirth,Gender,Weight,Color,Temperament,DateArrived,Bio,Status,AdoptionFee");
+        foreach (var pet in model)
+        {
+            String FosterParent;
+            if (pet.CurrentFosterAssignment?.Foster == null)
+            {
+                FosterParent = "None";
+            }
+            else
+            {
+                FosterParent = pet.CurrentFosterAssignment.Foster.FullName;
+            }
+
+            csv.AppendLine($"{pet.Id},{pet.Details.Name},{FosterParent},{pet.Details.Species},{pet.Details.Breed},{pet.Details.DateOfBirth},{pet
+                .Details.Gender},{pet.Details.Weight},{pet.Details.Color},{pet.Details.Temperament},{pet.Details.DateArrived},{pet.Details.Bio},{pet.Status},{pet.Details.AdoptionFee}");
+        }
+        String date = DateTime.Now.ToString("yyyyMMddHHmm");
+
+        return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"ListOfPets{date}.csv");
     }
 
 
