@@ -138,6 +138,11 @@ public class AdminDashboardController : Controller
         else if (model.Pet != null)
         {
             var foster = await _context.Users.FindAsync(model.Pet?.CurrentFosterAssignment?.FosterId);
+            //after model.Pet.CurrentFosterAssignemnt is used to set foster, clear CurrentFosterAssignment and save pet to avoid creating a foster assignment
+            //with no petId and so that pet will have an id to be used when creating new Fosterassignment
+            model.Pet.CurrentFosterAssignment = null;
+            await _context.Pets.AddAsync(model.Pet);
+            await _context.SaveChangesAsync();
             if (foster != null)
             {
                 var newFosterAssignment = new Fosterassignment
@@ -149,7 +154,6 @@ public class AdminDashboardController : Controller
                 model.Pet.CurrentFosterAssignment = newFosterAssignment;
                 await _context.Fosterassignments.AddAsync(newFosterAssignment);
             }
-            await _context.Pets.AddAsync(model.Pet);
             await _context.SaveChangesAsync();
             return RedirectToAction("EditPets");
         }
