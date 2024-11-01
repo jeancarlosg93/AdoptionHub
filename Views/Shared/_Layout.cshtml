@@ -6,24 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - AdoptionHub</title>
     <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <link rel="stylesheet" href="~/css/AdoptionHub.styles.css" asp-append-version="true"/>
 </head>
 <body class="min-vh-100 d-flex flex-column">
-<div class="modal fade" id="LoginModal" tabindex="-1" aria-labelledby="LoginModal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="LoginModal">Welcome Back!</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
 <header class="navbar navbar-expand-lg navbar-light bg-light container-fluid shadow nav-fill">
 
     <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
@@ -60,21 +49,45 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse position-relative" id="navbarNav">
         <ul class="navbar-nav nav-pills mx-auto">
-            <li class="nav-item">
-                <a class="nav-link fs-5" asp-area="" asp-controller="Home" asp-action="Index">Adopt Now</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link fs-5" asp-area="" asp-controller="Home" asp-action="Privacy">Our Mission</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link fs-5" asp-area="" asp-controller="Home" asp-action="Privacy">Get Involved</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link fs-5" asp-area="" asp-controller="Home" asp-action="Privacy">Contact Us</a>
-            </li>
+            @if (!string.IsNullOrEmpty(ViewContext.HttpContext.Session.GetString("IsAuthenticated")))
+            {
+                if (!string.IsNullOrEmpty(ViewContext.HttpContext.Session.GetString("IsFoster")))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link fs-5" asp-area="" asp-controller="FosterDashboard" asp-action="Index">Foster Dashboard</a>
+                    </li>
+                }
+
+                if (!string.IsNullOrEmpty(ViewContext.HttpContext.Session.GetString("IsAdmin")))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link fs-5" asp-area="" asp-controller="AdminDashboard" asp-action="EditPets">Edit Pets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fs-5" asp-area="" asp-controller="AdminDashboard" asp-action="EditUsers">Edit Users</a>
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="nav-item">
+                    <a class="nav-link fs-5" asp-controller="Home" asp-action="Dashboard">Adopt Now</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5"  asp-controller="Home" asp-action="OurMission">Our Mission</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5" asp-controller="Login" asp-action="Register">Get Involved</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5"  asp-controller="Home" asp-action="ContactUs">Contact Us</a>
+                </li>
+            }
         </ul>
+
         @if (string.IsNullOrEmpty(ViewContext.HttpContext.Session.GetString("IsAuthenticated")))
         {
             <div class="text-end me-4 pe-2">

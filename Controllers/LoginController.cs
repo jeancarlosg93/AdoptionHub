@@ -46,12 +46,14 @@ public class LoginController : Controller
             if (user.UserRole == "admin")
             {
                 _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
+                HttpContext.Session.SetString("IsAdmin", "Y");
                 return RedirectToAction("Index", "AdminDashboard");
             }
 
             if (user.UserRole == "foster")
             {
                 _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
+                HttpContext.Session.SetString("IsFoster", "Y");
                 return RedirectToAction("Index", "FosterDashboard");
             }
         }
