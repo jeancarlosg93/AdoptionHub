@@ -12,4 +12,5 @@ public partial class Petimage
     public string? ImageUrl { get; set; }
 
     public virtual Pet? Pet { get; set; }
+
 }

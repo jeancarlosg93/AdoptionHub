@@ -78,3 +78,43 @@
         object-fit: cover;
     }
 }
+
+.btn-outline-custom {
+    color: black;
+    border-color: #007bff;
+}
+
+    .btn-outline-custom:hover {
+        color: white;
+        background-color: black;
+        border-color: #007bff;
+    }
+
+
+/*Pet filters*/
+.filter-section {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.filter-section select {
+    width: 100%;
+    padding: 6px 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.filter-section label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.filter-section .btn-primary {
+    width: 100%;
+    margin-top: 10px;
+}

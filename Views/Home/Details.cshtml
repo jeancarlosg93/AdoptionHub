@@ -18,7 +18,7 @@
     <div class="card shadow border-0 overflow-hidden">
         <div class="row g-0">
             <div class="col-lg-7 position-relative">
-                <img src="/images/exampleImg/dog@(Random.Next(1, 8)).jpg" 
+                <img src="@(Model.Petimages.FirstOrDefault()?.ImageUrl ?? "/images/placeholder.jpg")"
                      class="w-100 h-100 object-fit-cover" 
                      alt="@Model.Details.Name"
                      style="max-height: 600px;">
@@ -40,8 +40,14 @@
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="p-3 rounded bg-light">
+                                    <small class="text-muted d-block">Age</small>
+                                    <strong>@ViewData["ExactAge"]</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded bg-light">
                                     <small class="text-muted d-block">Weight</small>
-                                    <strong>@Model.Details.Weight kg</strong>
+                                    <strong>@Model.Details.Weight lbs</strong>
                                 </div>
                             </div>
                             <div class="col-6">

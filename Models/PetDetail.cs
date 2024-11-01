@@ -31,4 +31,5 @@ public partial class PetDetail
     public decimal? AdoptionFee { get; set; }
 
     public virtual required Pet Pet { get; set; }
+
 }

@@ -1,36 +1,103 @@
 ﻿@{
-    ViewData["Title"] = "Foster Dashboard";
+    ViewData["Title"] = "Home Dashboard";
 }
 
 <div class="container mt-4">
     <div class="row mb-4">
-        <a class="btn btn-outline-danger " href="@Url.Action("Index", "Home")">Go Back</a>
-    </div>
-    <div class="row">
+        <div class="col-3 filter-section">FILTER SEARCH
+            <form id="filter-form">
+                <div>
+                    <label for="species-select">Find your best match!</label>
+                    <select name="species" id="species-select">
+                        <option value="">Any</option>
+                        <option value="dog">Dog</option>
+                        <option value="cat">Cat</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="breed-select">BREED</label>
+                    <select name="breed" id="breed-select">
+                        <option value="">Any</option>
+                        <option value="German Shepherd">German Shepherd</option>
+                        <option value="Golden Retriever">Golden Retriever</option>
+                        <option value="Labrador">Labrador</option>
+                        <option value="Bulldog">Bulldog</option>
+                        <option value="Mixed breed">Mixed breed</option>
+                        <option value="Siamese">Siamese</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="age-select">AGE</label>
+                    <select name="age" id="age-select">
+                        <option value="">Any</option>
+                        <option value="puppy">Puppy</option>
+                        <option value="young">Young</option>
+                        <option value="adult">Adult</option>
+                        <option value="senior">Senior</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="size-select">SIZE</label>
+                    <select name="size" id="size-select">
+                        <option value="">Any</option>
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="extra large">Extra Large</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="gender-select">GENDER</label>
+                    <select name="gender" id="gender-select">
+                        <option value="">Any</option>
+                        <option value="f">Female</option>
+                        <option value="m">Male</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+             </form>
+        </div>
 
-
-        @foreach (var pet in Model)
-
-        {
-            <div class="col-auto m-2 mb-2">
-                <div class="hvr-grow card pet-card shadow-sm" style="width: 18rem;">
-                    <img src="/images/exampleImg/dog@(new Random().Next(1, 8)).jpg"
-                         class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h4 class="card-title">@pet.Name</h4>
-                        <p class="card-text">@pet.Temperament</p>
-                    </div>
-
-                    <ul class="list-group list-group-flush ">
-                        <li class="list-group-item">Gender: @pet.Gender</li>
-                        <li class="list-group-item"> Age: @pet.Age</li>
-                    </ul>
-                    <div class="card-body d-flex justify-content-center">
-                        <a href="@Url.Action("Details", "Home",new {id = pet.Id})" class="btn btn-outline-dark">View more details</a>
-                    </div>
+        <div class="col-9">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <a class="btn btn-outline-custom w-100" href="@Url.Action("Index", "Home")">Go Back</a>
                 </div>
             </div>
-            
-        }
-    </div>
+            @if (ViewBag.NoPetsFoundMessage != null)
+            {
+                <div class="alert alert-warning">
+                    @ViewBag.NoPetsFoundMessage
+                </div>
+            }
+            <div class="row">
+                 @if (Model.Count > 0)
+                {
+                    @foreach (var pet in Model)
+                    {
+                        <div class="col-auto m-2 mb-2">
+                            <div class="hvr-grow card pet-card shadow-sm" style="width: 18rem;">
+                                @* <img src="/images/exampleImg/dog@(new Random().Next(1, 8)).jpg"
+                        class="card-img-top" alt="..."> *@
+                                <img src="@pet.ImageUrl" class="card-img-top" alt="Image of @pet.Name">
+                                <div class="card-body">
+                                    <h4 class="card-title">@pet.Name</h4>
+                                    <p class="card-text">@pet.Temperament</p>
+                                </div>
+
+                                <ul class="list-group list-group-flush ">
+                                    <li class="list-group-item">Gender: @pet.Gender</li>
+                                    <li class="list-group-item"> Age: @pet.AgeCategory</li>
+                                </ul>
+                                <div class="card-body d-flex justify-content-center">
+                                    <a href="@Url.Action("Details", "Home",new {id = pet.Id})" class="btn btn-outline-dark">View more details</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                
+            </div>
+        </div>
+    </div>      
 </div>
