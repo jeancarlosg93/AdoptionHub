@@ -1,23 +1,26 @@
 ﻿namespace AdoptionHub.Services;
 
+using AdoptionHub.Models;
+using AdoptionHub.Contexts;
+
 public class LogInLogService
 {
-    public void UpdateLogRegistry(string msg) 
+    private readonly ApplicationDbContext _context;
+
+    public LogInLogService(ApplicationDbContext context)
     {
-        string logEntry = "date: " + DateTime.Now + ", " + msg;
-        string dir = Directory.GetCurrentDirectory();
-        string path = Path.Combine(dir, "Output\\Log.txt");
-   
-        Directory.CreateDirectory(Path.GetDirectoryName(path));
-   
-        if (!File.Exists(path))
+        _context = context;
+    }
+
+    public async Task UpdateLogRegistry(string msg)
+    {
+        var logEntry = new LoginLog
         {
-            File.Create(path).Dispose();
-        }
-   
-        using (StreamWriter sw = new StreamWriter(path, true))
-        {
-            sw.WriteLine(logEntry);
-        }
+            Date = DateTime.Now,
+            Message = msg
+        };
+
+        await _context.LoginLogs.AddAsync(logEntry);
+        await _context.SaveChangesAsync();
     }
 }

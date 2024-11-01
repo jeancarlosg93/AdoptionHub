@@ -33,6 +33,9 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<Veterinarian> Veterinarians { get; set; }
 
     public virtual DbSet<SignupCode> SignupCodes { get; set; }
+    
+    public virtual DbSet<LoginLog> LoginLogs { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -349,6 +352,26 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(30)
                 .HasColumnName("phoneNumber");
         });
+
+    modelBuilder.Entity<LoginLog>(entity =>
+    {
+        entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+        entity.ToTable("loginlogs");
+
+        entity.Property(e => e.Id)
+            .HasColumnName("id")
+            .ValueGeneratedOnAdd();
+
+        entity.Property(e => e.Date)
+            .HasColumnName("date")
+            .HasColumnType("datetime");
+
+        entity.Property(e => e.Message)
+            .IsRequired()
+            .HasMaxLength(255)
+            .HasColumnName("message");
+    });
 
         OnModelCreatingPartial(modelBuilder);
     }

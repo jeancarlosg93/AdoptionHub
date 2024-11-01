@@ -16,7 +16,7 @@ public class LoginController : Controller
 
     public LoginController(ApplicationDbContext context, LogInLogService logInLogService)
     {
-        _logInLogService = logInLogService;
+        _logInLogService = logInLogService; 
         _context = context;
     }
 
@@ -33,9 +33,9 @@ public class LoginController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    public IActionResult LoginMethod(LoginViewModel model)
+    public async Task<IActionResult> LoginMethod(LoginViewModel model)
     {
-        var user = _context.Users.FirstOrDefault(u => u.Username == model.Username && u.Password == model.Password);
+         var user =  _context.Users.FirstOrDefault(u => u.Username == model.Username && u.Password == model.Password);
 
         if (user != null)
         {
@@ -45,21 +45,21 @@ public class LoginController : Controller
 
             if (user.UserRole == "admin")
             {
-                _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
+               await _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
                 HttpContext.Session.SetString("IsAdmin", "Y");
                 return RedirectToAction("Index", "AdminDashboard");
             }
 
             if (user.UserRole == "foster")
             {
-                _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
+                await _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
                 HttpContext.Session.SetString("IsFoster", "Y");
                 return RedirectToAction("Index", "FosterDashboard");
             }
         }
         else
         {
-            _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
+            await _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
             model.ErrorMessage = "Your username or password is incorrect";
             return View("Index", model);
         }
