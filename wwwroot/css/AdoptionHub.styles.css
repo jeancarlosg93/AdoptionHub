@@ -8,7 +8,9 @@
     justify-content: center;
     height: 100vh
 }
-
+.purple{
+    --text-primary: #6f42c1;
+}
 :root {
     font-family: Inter, sans-serif;
     font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
