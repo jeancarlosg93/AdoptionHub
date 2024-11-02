@@ -21,24 +21,32 @@ public class FosterDashboardController : Controller
 
     public IActionResult Index(List<FosterDashboardViewModel> model)
     {
-        //get the current username from the session
         var username = HttpContext.Session.GetString("userName");
+        var fosterUser = _context.Users.FirstOrDefault(u => u.Username == username);
 
-        var pets =  _context.Pets
-            .Include(p => p.Details)
-            .Include(p => p.Fosterassignments)
-            .ThenInclude(fa => fa.Foster)
-            .Include(p => p.Petimages)
-            .Where(p => p.Fosterassignments.Any(fa => fa.Foster.Username == username))
+        if (fosterUser == null)
+        {
+            return NotFound("Foster user not found.");
+        }
+
+        //fosterassignments associated with fosterUser.Id
+        var fosterAssignments = _context.Fosterassignments
+            .Include(fa => fa.Pet)
+                .ThenInclude(p => p.Details)
+            .Include(fa => fa.Pet)
+                .ThenInclude(p => p.Petimages)
+            .Where(fa => fa.FosterId == fosterUser.Id)
             .ToList();
 
-        foreach (var pet in pets)
+        //current date for comparison
+        var today = DateOnly.FromDateTime(DateTime.Now);
+
+        foreach (var assignment in fosterAssignments)
         {
+            var pet = assignment.Pet;
             var imageUrl = pet.Petimages != null && pet.Petimages.Any()
                 ? pet.Petimages.First().ImageUrl
                 : "/images/exampleImg/noimage.jpg";
-
-            var isCurrentFoster = pet.Fosterassignments.Any(fa => fa.Foster.Username == username && fa.IsActive);
 
             model.Add(new FosterDashboardViewModel
             {
@@ -46,10 +54,9 @@ public class FosterDashboardController : Controller
                 Name = pet.Details.Name,
                 Species = pet.Details.Species,
                 Images = new List<string> { imageUrl },
-                IsCurrentFoster = isCurrentFoster
+                IsCurrentFoster = assignment.EndDate == null || assignment.EndDate > today
             });
         }
-
         return View(model);
     }
 
