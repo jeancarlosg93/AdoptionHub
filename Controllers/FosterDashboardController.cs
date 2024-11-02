@@ -21,7 +21,7 @@ public class FosterDashboardController : Controller
 
     public IActionResult Index(List<FosterDashboardViewModel> model)
     {
-        // Get the current username from the session
+        //get the current username from the session
         var username = HttpContext.Session.GetString("userName");
 
         var pets =  _context.Pets
@@ -38,12 +38,15 @@ public class FosterDashboardController : Controller
                 ? pet.Petimages.First().ImageUrl
                 : "/images/exampleImg/noimage.jpg";
 
+            var isCurrentFoster = pet.Fosterassignments.Any(fa => fa.Foster.Username == username && fa.IsActive);
+
             model.Add(new FosterDashboardViewModel
             {
                 Id = pet.Id,
                 Name = pet.Details.Name,
                 Species = pet.Details.Species,
-                Images = new List<string> { imageUrl }
+                Images = new List<string> { imageUrl },
+                IsCurrentFoster = isCurrentFoster
             });
         }
 

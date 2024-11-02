@@ -8,5 +8,7 @@ namespace AdoptionHub.Models
         public string Name { get; set; }
         public string Species { get; set; }
         public List<string> Images { get; set; }
+
+        public bool IsCurrentFoster { get; set; }
     }
 }
