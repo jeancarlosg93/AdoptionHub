@@ -19,6 +19,4 @@ public partial class Fosterassignment
 
     public virtual Pet? Pet { get; set; }
 
-    //public virtual Foster Foster { get; set; }
-    //public bool IsCurrent => EndDate == null;
 }

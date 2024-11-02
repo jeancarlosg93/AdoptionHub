@@ -31,10 +31,8 @@ public class FosterDashboardController : Controller
 
         //fosterassignments associated with fosterUser.Id
         var fosterAssignments = _context.Fosterassignments
-            .Include(fa => fa.Pet)
-                .ThenInclude(p => p.Details)
-            .Include(fa => fa.Pet)
-                .ThenInclude(p => p.Petimages)
+            .Include(fa => fa.Pet).ThenInclude(p => p.Details)
+            .Include(fa => fa.Pet).ThenInclude(p => p.Petimages)
             .Where(fa => fa.FosterId == fosterUser.Id)
             .ToList();
 
