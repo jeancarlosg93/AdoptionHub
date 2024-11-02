@@ -33,7 +33,7 @@ namespace AdoptionHub.Models
             {
                 if (ApptDate[i].HasValue && !string.IsNullOrEmpty(ApptReason[i]))
                 {
-                    result.Add($"{ApptReason[i]}, {ApptDate[i]:yyyy MMMM dd}");
+                    result.Add($"{ApptReason[i]}, {ApptDate[i]:yyyy MMMM dd hh:mm tt}");
                 }
             }
 

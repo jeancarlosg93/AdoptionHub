@@ -18,4 +18,5 @@ public partial class Fosterassignment
     public virtual User? Foster { get; set; }
 
     public virtual Pet? Pet { get; set; }
+
 }

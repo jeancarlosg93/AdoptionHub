@@ -29,7 +29,7 @@
                 </div>
 
                 <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                    <span>@Model.Gender</span>
+                    <span>@(Model.Gender == "F" ? "Female" : "Male")</span>
                 </div>
             </div>
         </div>
