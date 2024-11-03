@@ -3,10 +3,6 @@
     ViewData["Title"] = $"{Model.Details.Name} - Pet Details";
 }
 
-@functions {
-    private static readonly Random Random = new Random();
-}
-
 <div class="container mt-4 mb-5">
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
@@ -18,11 +14,42 @@
     <div class="card shadow border-0 overflow-hidden">
         <div class="row g-0">
             <div class="col-lg-7 position-relative">
-                <img src="@(Model.Petimages.FirstOrDefault()?.ImageUrl ?? "/images/placeholder.jpg")"
-                     class="w-100 h-100 object-fit-cover" 
-                     alt="@Model.Details.Name"
-                     style="max-height: 600px;">
-                
+                <div id="petCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        @for (int i = 0; i < Model.Petimages.Count(); i++)
+                        {
+                        <button type="button" data-bs-target="#petCarousel"
+                                data-bs-slide-to="@i"
+                                class="@(i == 0 ? "active" : "")"
+                                aria-current="@(i == 0 ? "true" : "false")"
+                                aria-label="Slide @(i + 1)">
+                        </button>
+                        }
+                    </div>
+
+                    <div class="carousel-inner">
+                        @{ var isFirst = true; }
+                        @foreach (var img in Model.Petimages)
+                        {
+                        <div class="carousel-item @(isFirst ? "active" : "")">
+                            <div class="ratio ratio-4x3">
+                                <img src="@img.ImageUrl" class="d-block w-100 h-100 object-fit-cover" alt="Pet image"/>
+                            </div>
+                        </div>
+                        isFirst = false;
+                        }
+                    </div>
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#petCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#petCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
             </div>
             <div class="col-lg-5">
                 <div class="card-body p-4">
