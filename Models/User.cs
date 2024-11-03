@@ -1,4 +1,6 @@
-﻿namespace AdoptionHub.Models;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+
+namespace AdoptionHub.Models;
 
 public partial class User
 {
@@ -7,6 +9,9 @@ public partial class User
     public string Username { get; set; } = null!;
 
     public string Password { get; set; } = null!;
+
+    [BindNever]
+    public string Salt { get; set; } = null!;
 
     public string? Email { get; set; }
 

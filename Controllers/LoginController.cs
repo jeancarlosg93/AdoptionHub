@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
-using AdoptionHub.Contexts;
+﻿using AdoptionHub.Contexts;
 using AdoptionHub.Models;
 using AdoptionHub.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 
 
 namespace AdoptionHub.Controllers;
@@ -16,7 +17,7 @@ public class LoginController : Controller
 
     public LoginController(ApplicationDbContext context, LogInLogService logInLogService)
     {
-        _logInLogService = logInLogService; 
+        _logInLogService = logInLogService;
         _context = context;
     }
 
@@ -35,7 +36,7 @@ public class LoginController : Controller
 
     public async Task<IActionResult> LoginMethod(LoginViewModel model)
     {
-         var user =  _context.Users.FirstOrDefault(u => u.Username == model.Username && u.Password == model.Password);
+        var user = _context.Users.FirstOrDefault(u => u.Username == model.Username && u.Password == model.Password);
 
         if (user != null)
         {
@@ -45,7 +46,7 @@ public class LoginController : Controller
 
             if (user.UserRole == "admin")
             {
-               await _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
+                await _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
                 HttpContext.Session.SetString("IsAdmin", "Y");
                 return RedirectToAction("Index", "AdminDashboard");
             }
@@ -67,72 +68,94 @@ public class LoginController : Controller
         return View("Index", model);
     }
 
-  [HttpGet]
-public IActionResult Register()
-{
-    return View(new RegisterViewModel { User = new User() });
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Register(RegisterViewModel model)
-{
-    
-    if (!ModelState.IsValid)
+    [HttpGet]
+    public IActionResult Register()
     {
-        return View(model);
+        return View(new RegisterViewModel { User = new User() });
     }
 
-    try
-    { 
-        var code = await _context.SignupCodes.FirstOrDefaultAsync(a => 
-            a.Code == model.Code && 
-            a.ExpiresAt > DateTime.Now);
-
-        if (code == null)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(RegisterViewModel model)
+    {
+        ModelState.Remove("Salt");
+        if (!ModelState.IsValid)
         {
-            ModelState.AddModelError("Code", "Invalid or expired registration code");
             return View(model);
         }
 
-      
-        if (await _context.Users.AnyAsync(u => u.Username == model.User.Username))
+        try
         {
-            ModelState.AddModelError("User.Username", "Username already taken");
+            var code = await _context.SignupCodes.FirstOrDefaultAsync(a =>
+                a.Code == model.Code &&
+                a.ExpiresAt > DateTime.Now);
+
+            if (code == null)
+            {
+                ModelState.AddModelError("Code", "Invalid or expired registration code");
+                return View(model);
+            }
+
+
+            if (await _context.Users.AnyAsync(u => u.Username == model.User.Username))
+            {
+                ModelState.AddModelError("User.Username", "Username already taken");
+                return View(model);
+            }
+
+            var salt = GenerateSalt();
+            var hashedPassword = HashPassword(model.User.Password, salt);
+
+
+
+            var newUser = new User
+            {
+                Username = model.User.Username,
+                Password = hashedPassword,
+                Salt = salt,
+                Email = model.User.Email,
+                LastName = model.User.LastName,
+                FirstName = model.User.FirstName,
+                Address = model.User.Address,
+                PhoneNumber = model.User.PhoneNumber,
+                UserRole = "foster"
+            };
+
+            await _context.Users.AddAsync(newUser);
+
+            _context.SignupCodes.Remove(code);
+
+            await _context.SaveChangesAsync();
+
+            _logInLogService.UpdateLogRegistry($"New user registered: {newUser.Username}");
+
+            TempData["SuccessMessage"] = "Registration successful! Please log in.";
+            return RedirectToAction("Index", "Login");
+        }
+        catch (Exception ex)
+        {
+            _logInLogService.UpdateLogRegistry($"Registration failed: {ex.Message}");
+            ModelState.AddModelError("", "An error occurred during registration. Please try again.");
             return View(model);
         }
-
-   
-        var newUser = new User
-        {
-            Username = model.User.Username,
-            Password = model.User.Password, 
-            Email = model.User.Email,
-            LastName = model.User.LastName,
-            FirstName = model.User.FirstName,
-            Address = model.User.Address,
-            PhoneNumber = model.User.PhoneNumber,
-            UserRole = "foster" 
-        };
-
-        await _context.Users.AddAsync(newUser);
-        
-        _context.SignupCodes.Remove(code);
-        
-        await _context.SaveChangesAsync();
-
-        _logInLogService.UpdateLogRegistry($"New user registered: {newUser.Username}");
-
-        TempData["SuccessMessage"] = "Registration successful! Please log in.";
-        return RedirectToAction("Index", "Login");
     }
-    catch (Exception ex)
+
+    private string GenerateSalt()
     {
-        _logInLogService.UpdateLogRegistry($"Registration failed: {ex.Message}");
-        ModelState.AddModelError("", "An error occurred during registration. Please try again.");
-        return View(model);
+        byte[] saltBytes = new byte[16];
+        RandomNumberGenerator.Fill(saltBytes);
+        return Convert.ToBase64String(saltBytes);
     }
-}
+
+    private string HashPassword(string password, string salt)
+    {
+        using (var sha256 = SHA256.Create())
+        {
+            var saltedPassword = password + salt;
+            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
+            return Convert.ToBase64String(hashBytes);
+        }
+    }
 
 
 
@@ -141,5 +164,5 @@ public async Task<IActionResult> Register(RegisterViewModel model)
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
-    
+
 }
