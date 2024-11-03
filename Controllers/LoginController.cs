@@ -36,14 +36,26 @@ public class LoginController : Controller
 
     public async Task<IActionResult> LoginMethod(LoginViewModel model)
     {
-        var user = _context.Users.FirstOrDefault(u => u.Username == model.Username && u.Password == model.Password);
+        var user = _context.Users.FirstOrDefault(u => u.Username == model.Username);
 
-        if (user != null)
+        if (user == null)
         {
+            await _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
+            model.ErrorMessage = "The provided username does not exist";
+            return View("Index", model);
+        }
+        else
+        {
+            var hashedPassword = HashPassword(model.Password, user.Salt);
+            if (user.Password != hashedPassword)
+            {
+                await _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
+                model.ErrorMessage = "The provided password is incorrect";
+                return View("Index", model);
+            }
             HttpContext.Session.SetString("userName", user.Username);
             HttpContext.Session.SetString("userRole", user.UserRole);
             HttpContext.Session.SetString("IsAuthenticated", "Y");
-
             if (user.UserRole == "admin")
             {
                 await _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
@@ -58,13 +70,6 @@ public class LoginController : Controller
                 return RedirectToAction("Index", "FosterDashboard");
             }
         }
-        else
-        {
-            await _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
-            model.ErrorMessage = "Your username or password is incorrect";
-            return View("Index", model);
-        }
-
         return View("Index", model);
     }
 
@@ -78,7 +83,7 @@ public class LoginController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        ModelState.Remove("Salt");
+        ModelState.Remove("User.Salt");
         if (!ModelState.IsValid)
         {
             return View(model);
