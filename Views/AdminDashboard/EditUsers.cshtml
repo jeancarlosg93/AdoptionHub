@@ -1,63 +1,100 @@
 ﻿@model List<AdoptionHub.Models.User>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Welcome to Admin Dashboard</p>
+<div class="container-fluid p-5">
+    <a href="@Url.Action("Index", "AdminDashboard")" class="btn btn-outline-dark btn-sm mb-2">
+        <i class="bi-arrow-left"></i> Back
+    </a>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>Full Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Address</th>
-                <th>User Role</th>
-                <th>Edit</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in Model)
-            {
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4">User Management</h1>
+        </div>
+    </div>
+
+    <div class="card mb-3 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">Registration Code</h5>
+        </div>
+        <div class="card-body">
+            <form id="signupCodeForm">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="text-center mb-4">
+                            <label class="form-label text-muted mb-2">Generated Code</label>
+                            <div class="card bg-light">
+                                <div class="card-body py-4">
+                                    <p id="codeResult" class="h3 mb-0 text-primary font-monospace"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="generateCode()">
+                                <i class="bi-plus-circle me-2"></i>Generate New Code
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle text-center mb-0">
+                <thead class="align-middle bg-light">
                 <tr>
-                    <td>@user.Username</td>
-                    <td>@user.FullName</td>
-                    <td>@user.Email</td>
-                    <td>@user.PhoneNumber</td>
-                    <td>@user.Address</td>
-                    <td>@user.UserRole</td>
-                    <td>
-                        <a href="@Url.Action("EditUser", "AdminDashboard", new { id = user.Id })" class="btn btn-primary">Edit</a>
-                    </td>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Address</th>
+                    <th>User Role</th>
+                    <th>Edit</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-    <h2>Generate a New Signup Code</h2>
+                </thead>
+                <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Username</td>
+                        <td>@user.FullName</td>
+                        <td>@user.Email</td>
+                        <td>@user.PhoneNumber</td>
+                        <td>@user.Address</td>
+                        <td>@user.UserRole</td>
+                        <td>
+                            <a href="@Url.Action("EditUser", "AdminDashboard", new { id = user.Id })"
+                               class="btn btn-outline-primary">
+                                <i class="bi-pencil"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <form id="signupCodeForm">
-        <button type="button" onclick="generateCode()">Generate Signup Code</button>
-    </form>
-
-    <p id="codeResult"></p>
-
-    
 </div>
 
 @section Scripts {
     <script>
-        function generateCode() {
-            fetch('/admindashboard/generatesignupcode', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+    function generateCode() {
+        fetch('/admindashboard/generatesignupcode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const codeElement = document.getElementById('codeResult');
+                codeElement.innerText = data.code;
             })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('codeResult').innerText = 'Generated Code: ' + data.code;
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    </script>
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to generate signup code. Please try again.');
+            });
+    }
+</script>
 }

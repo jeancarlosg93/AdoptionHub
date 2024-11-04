@@ -5,9 +5,13 @@ const myWidget = cloudinary.createUploadWidget(
     {
         cloudName: cloudName,
         uploadPreset: uploadPreset,
-        cropping: true,
+        cropping: true, 
+        croppingAspectRatio: 0.8, 
+        croppingShowDimensions: true, 
+        croppingDefaultSelectionRatio: 0.8, 
+        showSkipCropButton: false, 
+        multiple: false,
         sources: ["local"],
-        multiple: true,
         maxImageFileSize: 2000000,
         maxImageWidth: 2000,
     },
@@ -27,17 +31,22 @@ const myWidget = cloudinary.createUploadWidget(
             const cardDiv = document.createElement('div');
             cardDiv.className = 'card h-100';
 
+            // Create the image container with fixed aspect ratio
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'ratio ratio-4x3';
+
             // Create the image element
             const preview = document.createElement('img');
             preview.src = result.info.thumbnail_url;
-            preview.className = 'card-img-top';
+            preview.className = 'card-img-top object-fit-cover';
             preview.alt = 'Preview Image';
-            preview.style.objectFit = 'cover';
-            preview.style.height = '200px';
+
+            // Add image to container
+            imageContainer.appendChild(preview);
 
             // Create card body for the remove button
             const cardBody = document.createElement('div');
-            cardBody.className = 'card-body';
+            cardBody.className = 'card-body p-2';
 
             // Create remove button
             const removeButton = document.createElement('button');
@@ -45,13 +54,12 @@ const myWidget = cloudinary.createUploadWidget(
             removeButton.className = 'btn btn-sm btn-outline-danger w-100';
             removeButton.textContent = 'Remove';
             removeButton.onclick = function() {
-                // Remove the hidden input as well when removing the preview
                 input.remove();
                 colDiv.remove();
             };
 
             // Assemble the card structure
-            cardDiv.appendChild(preview);
+            cardDiv.appendChild(imageContainer);
             cardBody.appendChild(removeButton);
             cardDiv.appendChild(cardBody);
             colDiv.appendChild(cardDiv);

@@ -1,9 +1,48 @@
-﻿@model List<Pet>
+﻿@using AdoptionHub.Services
+@model List<Pet>
+@section Scripts
+{
+    <script src="https://kit.fontawesome.com/da36339698.js" crossorigin="anonymous"></script>
+}
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Welcome to Admin Dashboard</p>
-
-    <a href="@Url.Action("EditPets", "AdminDashboard")">Edit Pets</a>
-    <a href="@Url.Action("EditUsers", "AdminDashboard")">Edit Users</a>
-   </div>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="text-center">
+            <h1 class="display-4">Welcome to Admin Dashboard</h1>
+            <div class="row justify-content-center py-5">
+                <div class="col-auto m-2 mb-2">
+                    <div class="hvr-grow card shadow-sm h-100" style="width: 18rem;">
+                        <div class="ratio ratio-4x3 text-center">
+                            <i class="fa-solid fa-cat fa-8x card-img-top object-fit-cover py-5"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-uppercase">Pet Management</h5>
+                            <p class="card-text text-muted mb-2">Add, remove and assign pets to fosters</p>
+                            <div class="card-body d-flex justify-content-center">
+                                <a class="btn btn-primary btn-lg" href="@Url.Action("EditPets", "AdminDashboard")">Edit Pets</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-auto m-2 mb-2">
+                    <div class="hvr-grow card shadow-sm h-100" style="width: 18rem;">
+                        <div class="ratio ratio-4x3">
+                            <i class="fa-solid fa-user fa-8x card-img-top py-5"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-center text-uppercase">User Management</h5>
+                            <p class="card-text text-muted mb-2">Edit user details and generate registration tokens</p>
+                            <div class="card-body d-flex justify-content-center">
+                                <a class="btn btn-primary btn-lg" href="@Url.Action("EditUsers", "AdminDashboard")">Edit Users</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+       
+</div>
+</div>
