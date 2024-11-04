@@ -132,14 +132,14 @@ public class LoginController : Controller
 
             await _context.SaveChangesAsync();
 
-            _logInLogService.UpdateLogRegistry($"New user registered: {newUser.Username}");
+            await _logInLogService.UpdateLogRegistry($"New user registered: {newUser.Username}");
 
             TempData["SuccessMessage"] = "Registration successful! Please log in.";
             return RedirectToAction("Index", "Login");
         }
         catch (Exception ex)
         {
-            _logInLogService.UpdateLogRegistry($"Registration failed: {ex.Message}");
+            await _logInLogService.UpdateLogRegistry($"Registration failed: {ex.Message}");
             ModelState.AddModelError("", "An error occurred during registration. Please try again.");
             return View(model);
         }
