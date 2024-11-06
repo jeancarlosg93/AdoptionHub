@@ -1,0 +1,225 @@
+﻿@model Adoptionapplication
+
+@{
+ViewData["Title"] = "Manage Adoption Application";
+}
+
+<div class="container p-4">
+    <div class="mb-4">
+        <a class="btn btn-secondary" href="@Url.Action("ManageApplications", "AdminDashboard")">
+            <i class="bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+
+
+    <form asp-action="UpdateAdoptionApplication" method="post">
+       
+        <input type="hidden" asp-for="Id" />
+
+        <!-- Pet Details Card (Read-Only) -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">Pet Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <input class="form-control" value="@Model.Pet.Details.Name" readonly />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Species</label>
+                            <input class="form-control" value="@Model.Pet.Details.Species" readonly />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Breed</label>
+                            <input class="form-control" value="@Model.Pet.Details.Breed" readonly />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Date of Birth</label>
+                            <input class="form-control" value="@Model.Pet.Details.DateOfBirth?.ToString("yyyy-MM-dd")" readonly />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Gender</label>
+                            <input class="form-control" value="@Model.Pet.Details.Gender" readonly />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Weight (kg)</label>
+                            <input class="form-control" value="@Model.Pet.Details.Weight?.ToString("F2")" readonly />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Color</label>
+                            <input class="form-control" value="@Model.Pet.Details.Color" readonly />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Temperament</label>
+                            <input class="form-control" value="@Model.Pet.Details.Temperament" readonly />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Date Arrived</label>
+                            <input class="form-control" value="@Model.Pet.Details.DateArrived?.ToString("yyyy-MM-dd")" readonly />
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="form-label">Bio</label>
+                            <textarea class="form-control" rows="4" style="resize: vertical;" readonly>@Model.Pet.Details.Bio</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">Adoption Fee ($)</label>
+                            <input class="form-control" value="@Model.Pet.Details.AdoptionFee?.ToString("F2")" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Status Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">Application Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ApplicationStatus" class="form-label">Application Status</label>
+                            <select asp-for="ApplicationStatus" class="form-control" asp-items="ViewBag.StatusOptions">
+                            </select>
+                            <span asp-validation-for="ApplicationStatus" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ApplicationDateTime" class="form-label">Application Date</label>
+                            <input asp-for="ApplicationDateTime" class="form-control" type="date" />
+                            <span asp-validation-for="ApplicationDateTime" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applicant Information Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">Applicant Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="FirstName" class="form-label">First Name</label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="LastName" class="form-label">Last Name</label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input asp-for="Email" class="form-control" type="email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                            <input asp-for="PhoneNumber" class="form-control" type="tel" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Address Information Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">Address Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Address" class="form-label">Address</label>
+                            <input asp-for="Address" class="form-control" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="City" class="form-label">City</label>
+                            <input asp-for="City" class="form-control" />
+                            <span asp-validation-for="City" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Province" class="form-label">Province</label>
+                            <input asp-for="Province" class="form-control" />
+                            <span asp-validation-for="Province" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label asp-for="Country" class="form-label">Country</label>
+                            <input asp-for="Country" class="form-control" />
+                            <span asp-validation-for="Country" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Comments Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">Additional Comments</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label asp-for="Comments" class="form-label">Comments</label>
+                    <textarea asp-for="Comments" class="form-control" rows="4" style="resize: vertical;"></textarea>
+                    <span asp-validation-for="Comments" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+            <a asp-action="Index" class="btn btn-danger btn-lg">
+                <i class="bi bi-x-circle me-2"></i>Cancel
+            </a>
+            <button type="submit" class="btn btn-success btn-lg">
+                <i class="bi bi-check-circle me-2"></i>Save
+            </button>
+        </div>
+    </form>
+</div>

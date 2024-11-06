@@ -174,8 +174,82 @@ public class AdminDashboardController : Controller
 
     public async Task<IActionResult> ManageApplications()
     {
-        var model = await _context.Adoptionapplications.ToListAsync();
+        var model = await _context.Adoptionapplications.Include(a => a.Pet).ThenInclude(p => p.Details).ToListAsync();
         return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ManageApplication(int id)
+    {
+        //options for status dropdown
+        var statusOptions = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "Approved", Text = "Approved" },
+            new SelectListItem { Value = "Pending", Text = "Pending" },
+            new SelectListItem { Value = "Rejected", Text = "Rejected" }
+        };
+        var model = _context.Adoptionapplications.Include(a => a.Pet).ThenInclude(p => p.Details).FirstOrDefault(a => a.Id == id);
+
+        statusOptions.FirstOrDefault(option => option.Value == model.ApplicationStatus).Selected = true;
+
+        ViewBag.StatusOptions = statusOptions;
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateAdoptionApplication(Adoptionapplication application)
+    {
+        if (ModelState.IsValid)
+        {
+            // Retrieve the existing application from the database to compare status
+            var existingApplication = await _context.Adoptionapplications
+                .Include(a => a.Pet)
+                .FirstOrDefaultAsync(a => a.Id == application.Id);
+
+            if (existingApplication == null)
+            {
+                return NotFound(); // Return 404 if the application is not found
+            }
+
+            // Check if the application status has changed
+            bool statusChanged = existingApplication.ApplicationStatus != application.ApplicationStatus;
+
+            if (statusChanged)
+            {
+                // Update pet status based on new application status
+                if (application.ApplicationStatus == "Approved")
+                {
+                    existingApplication.Pet.Status = "Adopted";
+                }
+                else if (application.ApplicationStatus == "Rejected" || application.ApplicationStatus == "Pending")
+                {
+                    if (existingApplication.ApplicationStatus == "Approved")
+                    {
+                        existingApplication.Pet.Status = "Available";
+                    }
+                }
+            }
+
+            existingApplication.ApplicationStatus = application.ApplicationStatus;
+            existingApplication.ApplicationDateTime = application.ApplicationDateTime;
+            existingApplication.Email = application.Email;
+            existingApplication.LastName = application.LastName;
+            existingApplication.FirstName = application.FirstName;
+            existingApplication.Address = application.Address;
+            existingApplication.City = application.City;
+            existingApplication.Province = application.Province;
+            existingApplication.Country = application.Country;
+            existingApplication.PhoneNumber = application.PhoneNumber;
+            existingApplication.Comments = application.Comments;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ManageApplications");
+        }
+
+        return View(application); // Return to view if ModelState is invalid
     }
 
 
