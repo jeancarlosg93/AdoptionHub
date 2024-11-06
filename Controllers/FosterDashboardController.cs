@@ -33,6 +33,7 @@ public class FosterDashboardController : Controller
         var fosterAssignments = _context.Fosterassignments
             .Include(fa => fa.Pet).ThenInclude(p => p.Details)
             .Include(fa => fa.Pet).ThenInclude(p => p.Petimages)
+            .Include(fa => fa.Pet).ThenInclude(p => p.Vetappointments)
             .Where(fa => fa.FosterId == fosterUser.Id)
             .ToList();
 
@@ -52,7 +53,8 @@ public class FosterDashboardController : Controller
                 Name = pet.Details.Name,
                 Species = pet.Details.Species,
                 Images = new List<string> { imageUrl },
-                IsCurrentFoster = assignment.EndDate == null || assignment.EndDate > today
+                IsCurrentFoster = assignment.EndDate == null || assignment.EndDate > today,
+                HasVetAppointments = pet.Vetappointments.Count
             });
         }
         return View(model);
