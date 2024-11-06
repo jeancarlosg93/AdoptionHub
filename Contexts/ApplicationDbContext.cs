@@ -75,6 +75,18 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("address");
 
+            entity.Property(e => e.City)
+                .HasMaxLength(100)
+                .HasColumnName("city");
+
+            entity.Property(e => e.Province)
+                .HasMaxLength(100)
+                .HasColumnName("province");
+
+            entity.Property(e => e.Country)
+                .HasMaxLength(100)
+                .HasColumnName("country");
+
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(20)
                 .HasColumnName("phoneNumber");
