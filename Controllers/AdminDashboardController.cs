@@ -170,6 +170,14 @@ public class AdminDashboardController : Controller
         return View(model);
     }
 
+    [HttpGet]
+
+    public async Task<IActionResult> ManageApplications()
+    {
+        var model = await _context.Adoptionapplications.ToListAsync();
+        return View(model);
+    }
+
 
     [HttpPost]
     public IActionResult GenerateSignupCode()
