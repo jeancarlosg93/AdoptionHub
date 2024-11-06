@@ -36,11 +36,6 @@ public class LoginController : Controller
 
     public async Task<IActionResult> LoginMethod(LoginViewModel model)
     {
-        if (!ModelState.IsValid)
-        {
-            return View("Index", model);
-        }
-
         try
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
@@ -52,42 +47,41 @@ public class LoginController : Controller
                 return View("Index", model);
             }
 
-            else
+
+            var hashedPassword = HashPassword(model.Password, user.Salt);
+
+            if (user.Password != hashedPassword)
             {
-                var hashedPassword = HashPassword(model.Password, user.Salt);
-                if (user.Password != hashedPassword)
+                await _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
+                model.ErrorMessage = "Invalid username or password";
+                return View("Index", model);
+            }
+
+            HttpContext.Session.SetString("userName", user.Username);
+            HttpContext.Session.SetString("userRole", user.UserRole);
+            HttpContext.Session.SetString("IsAuthenticated", "Y");
+
+            switch (user.UserRole)
+            {
+                case "admin":
                 {
-                    await _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
-                    model.ErrorMessage = "Invalid username or password";
-                    return View("Index", model);
+                    await _logInLogService.UpdateLogRegistry("userName: " + model.Username +
+                                                             ", result: Successful login");
+                    HttpContext.Session.SetString("IsAdmin", "Y");
+                    return RedirectToAction("Index", "AdminDashboard");
                 }
 
-                HttpContext.Session.SetString("userName", user.Username);
-                HttpContext.Session.SetString("userRole", user.UserRole);
-                HttpContext.Session.SetString("IsAuthenticated", "Y");
-
-                switch (user.UserRole)
+                case "foster":
                 {
-                    case "Admin":
-                    {
-                        await _logInLogService.UpdateLogRegistry("userName: " + model.Username +
-                                                                 ", result: Successful login");
-                        HttpContext.Session.SetString("IsAdmin", "Y");
-                        return RedirectToAction("Index", "AdminDashboard");
-                    }
+                    await _logInLogService.UpdateLogRegistry("userName: " + model.Username +
+                                                             ", result: Successful login");
+                    HttpContext.Session.SetString("IsFoster", "Y");
+                    return RedirectToAction("Index", "FosterDashboard");
+                }
 
-                    case "Foster":
-                    {
-                        await _logInLogService.UpdateLogRegistry("userName: " + model.Username +
-                                                                 ", result: Successful login");
-                        HttpContext.Session.SetString("IsFoster", "Y");
-                        return RedirectToAction("Index", "FosterDashboard");
-                    }
-
-                    default:
-                    {
-                      return RedirectToAction("Index", "Home");   
-                    }
+                default:
+                {
+                    return RedirectToAction("Index", "Home");
                 }
             }
         }
