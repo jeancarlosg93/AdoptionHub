@@ -31,24 +31,23 @@
             if (pet1.Status != "adopted")
             {
                 <div class="col-auto mb-4">
-                    <div class="hvr-grow card shadow-sm" style="width: 16rem;">
+                    <div class="hvr-grow card shadow-sm" style="width: 18rem;">
                         <div class="card-header">
 
                             @if (pet1.Status == "Available")
                             {
-                                <span class="col-12 badge bg-success">@pet1.Status</span>
+                                <span class="col-12 badge bg-primary">@pet1.Status</span>
                             }
                             else
                             {
-                                <span class="col-12 badge bg-primary">@pet1.Status</span>
+                                <span class="col-12 badge bg-success">@pet1.Status</span>
                             }
                         </div>
 
                         <div class="card-body">
-                            <h5 class="card-title">@pet1.Details.Name</h5>
+                            <h4 class="card-title align-top">@pet1.Details.Name</h4>
                             <p class="card-subtitle">@pet1.Details.Species</p>
                         </div>
-
                         <ul class="list-group list-group-flush ">
                             @if (pet1.Details.Gender == "M")
                             {
@@ -58,22 +57,34 @@
                             {
                                 <li class="list-group-item">Female</li>
                             }
+                            <li class="list-group-item">@pet1.Details.Weight kg</li>
+                            <li class="list-group-item">@pet1.Details.Color</li>
 
 
-                            <li class="list-group-item">
+                            @if (pet1.Appointments.Count != 0)
+                            {
+                                <li class="list-group-item">
+                                    Vet Appointments:
+                                    <span class="badge bg-danger">@pet1.Vetappointments.Count</span>
+                                </li>
+                            }
 
-
-                            </li>
-                            <li class="list-group-item">Date arrived: @pet1.Details.DateArrived</li>
-                            <li class="list-group-item"> Vet appointments @pet1.Vetappointments.Count</li>
 
                         </ul>
-                        <div class="card-body d-flex justify-content-center">
-                            <a href="@Url.Action("EditPet", "AdminDashboard", new { id = pet1.Id })"
-                               class="btn btn-outline-primary">
-                                <i class="bi-pencil me-1"></i>Edit
-                            </a>
+                        
+
+                        <div class="card-footer text-body-secondary text-center">
+                            Date Arrived: @pet1.Details.DateArrived<br/>
+
+                            <div class="d-flex justify-content-center py-2 px-1">
+                                <a href="@Url.Action("EditPet", "AdminDashboard", new { id = pet1.Id })"
+                                   class="btn btn-outline-primary w-100">
+                                    <i class="bi-pencil me-1"></i>Edit
+                                </a>
+                            </div>
+
                         </div>
+
                     </div>
                 </div>
             }
