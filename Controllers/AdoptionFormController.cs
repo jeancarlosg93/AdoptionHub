@@ -33,10 +33,7 @@ namespace AdoptionHub.Controllers
     [HttpPost]
     public IActionResult SubmitApplication(AdoptionFormViewModel model)
     {
-        if (!ModelState.IsValid)
-        {
-            return View("AdoptionForm", model);
-        }
+        var pet = _context.AdoptionApplications.First(pet => pet.Id == model.Id);
 
         var adoptionApplication = new Adoptionapplication
         {
@@ -54,6 +51,7 @@ namespace AdoptionHub.Controllers
         _context.Adoptionapplications.Add(adoptionApplication);
         _context.SaveChanges();
 
-        //return RedirectToAction("ApplicationConfirmation", new { id = adoptionApplication.Id });
+        return RedirectToAction();
+        //("ApplicationConfirmation", new { id = adoptionApplication.Id });
     }
 }

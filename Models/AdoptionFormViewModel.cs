@@ -24,6 +24,15 @@ public class AdoptionFormViewModel
     [Required(ErrorMessage = "Address is required")]
     [StringLength(50)] public string Address { get; set; }
 
+    [Required(ErrorMessage = "City is required")]
+    [StringLength(50)] public string City { get; set; }
+
+    [Required(ErrorMessage = "Province is required")]
+    [StringLength(50)] public string Province { get; set; }
+
+    [Required(ErrorMessage = "Country is required")]
+    [StringLength(50)] public string Country { get; set; }
+
     [Phone(ErrorMessage = "Invalid phone number")]
     [Display(Name = "Phone Number")]
     public string PhoneNumber { get; set; }
