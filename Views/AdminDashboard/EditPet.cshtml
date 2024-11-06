@@ -6,7 +6,7 @@ ViewData["Title"] = "Edit Pet";
 
 <div class="container p-4">
     <div class="mb-4">
-        <a class="btn btn-outline-dark btn-sm mb-2" href="@Url.Action("Index", "AdminDashboard")">
+        <a class="btn btn-outline-dark btn-sm mb-2" href="@Url.Action("EditPets", "AdminDashboard")">
             <i class="bi-arrow-left"></i> Back
         </a>
     </div>
@@ -156,7 +156,7 @@ ViewData["Title"] = "Edit Pet";
 
         <!-- Action Buttons -->
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
-            <a asp-action="Index" class="btn btn-danger btn-lg">
+            <a asp-action="EditPets" class="btn btn-danger btn-lg">
                 <i class="bi bi-x-circle me-2"></i>Cancel
             </a>
             <button type="submit" class="btn btn-success btn-lg">
