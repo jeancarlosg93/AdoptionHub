@@ -4,6 +4,7 @@ using AdoptionHub.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdoptionHub.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241106014529_CleanupUserIdFromSnapshot")]
+    partial class CleanupUserIdFromSnapshot
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,20 +51,10 @@ namespace AdoptionHub.Migrations
                         .HasColumnType("varchar(15)")
                         .HasColumnName("applicationStatus");
 
-                    b.Property<string>("City")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
-                        .HasColumnName("city");
-
                     b.Property<string>("Comments")
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)")
                         .HasColumnName("comments");
-
-                    b.Property<string>("Country")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
-                        .HasColumnName("country");
 
                     b.Property<string>("Email")
                         .HasMaxLength(50)
@@ -86,11 +79,6 @@ namespace AdoptionHub.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)")
                         .HasColumnName("phoneNumber");
-
-                    b.Property<string>("Province")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
-                        .HasColumnName("province");
 
                     b.HasKey("Id")
                         .HasName("PRIMARY");
