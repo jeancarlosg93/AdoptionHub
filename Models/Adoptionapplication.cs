@@ -1,21 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AdoptionHub.Models;
+﻿namespace AdoptionHub.Models;
 
 public partial class Adoptionapplication
 {
     public int Id { get; set; }
 
-    public int? AdopterId { get; set; }
-
     public int? PetId { get; set; }
 
     public string ApplicationStatus { get; set; } = null!;
 
-    public DateOnly? ApplicationDate { get; set; }
-
-    public virtual User? Adopter { get; set; }
+    public DateTime? ApplicationDateTime { get; set; }
 
     public virtual Pet? Pet { get; set; }
+
+    public string? Email { get; set; }
+
+    public string? LastName { get; set; }
+
+    public string? FirstName { get; set; }
+
+    public string? Address { get; set; }
+
+    public string? PhoneNumber { get; set; }
+    public string? Comments { get; set; }
+    public string FullName => $"{FirstName} {LastName}".Trim();
+
 }

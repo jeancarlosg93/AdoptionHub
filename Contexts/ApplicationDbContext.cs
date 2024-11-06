@@ -49,26 +49,45 @@ public partial class ApplicationDbContext : DbContext
 
             entity.ToTable("adoptionapplications");
 
-            entity.HasIndex(e => e.AdopterId, "adopterId");
-
             entity.HasIndex(e => e.PetId, "petId");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.AdopterId).HasColumnName("adopterId");
-            entity.Property(e => e.ApplicationDate).HasColumnName("applicationDate");
+            entity.Property(e => e.PetId).HasColumnName("petId");
+            entity.Property(e => e.ApplicationDateTime).HasColumnType("datetime").HasColumnName("applicationDateTime");
+
             entity.Property(e => e.ApplicationStatus)
                 .HasMaxLength(15)
                 .HasColumnName("applicationStatus");
-            entity.Property(e => e.PetId).HasColumnName("petId");
 
-            entity.HasOne(d => d.Adopter).WithMany(p => p.Adoptionapplications)
-                .HasForeignKey(d => d.AdopterId)
-                .HasConstraintName("AdoptionApplications_ibfk_1");
+            entity.Property(e => e.Email)
+                .HasMaxLength(50)
+                .HasColumnName("email");
+
+            entity.Property(e => e.LastName)
+                .HasMaxLength(50)
+                .HasColumnName("lastName");
+
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(50)
+                .HasColumnName("firstName");
+
+            entity.Property(e => e.Address)
+                .HasMaxLength(100)
+                .HasColumnName("address");
+
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(20)
+                .HasColumnName("phoneNumber");
+
+            entity.Property(e => e.Comments)
+                .HasMaxLength(500)
+                .HasColumnName("comments");
 
             entity.HasOne(d => d.Pet).WithMany(p => p.Adoptionapplications)
                 .HasForeignKey(d => d.PetId)
                 .HasConstraintName("AdoptionApplications_ibfk_2");
         });
+
 
         modelBuilder.Entity<Appointment>(entity =>
         {
