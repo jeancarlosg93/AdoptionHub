@@ -10,5 +10,7 @@ namespace AdoptionHub.Models
         public List<string> Images { get; set; }
 
         public bool IsCurrentFoster { get; set; }
+        
+        public int HasVetAppointments { get; set; }
     }
 }
