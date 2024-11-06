@@ -1,0 +1,105 @@
+﻿@model List<Vetappointment>
+
+<div class="container p-4">
+    <div class="mb-4">
+        <a class="btn btn-outline-dark btn-sm mb-2" href="@Url.Action("Index", "AdminDashboard")">
+            <i class="bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-4 mb-0">Veterinary Appointments</h1>
+        <a href="@Url.Action("EditVetAppointment", "AdminDashboard")" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>New Appointment
+        </a>
+    </div>
+
+    <!-- Hidden form for delete operations -->
+    <form id="deleteForm" method="post">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th>Pet</th>
+                        <th>Date & Time</th>
+                        <th>Veterinarian</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var appt in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <div class="fw-bold">@appt.Pet?.Details?.Name</div>
+                                        <small class="text-muted">@appt.Pet?.Details?.Species - @appt.Pet?.Details?.Breed</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@appt.ApptDate?.ToString("MMM dd, yyyy h:mm tt")</td>
+                            <td>
+                                @if (appt.Vet != null)
+                                {
+                                    <div>Dr. @appt.Vet.FirstName @appt.Vet.LastName</div>
+                                    <small class="text-muted">@appt.Vet.PhoneNumber</small>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not assigned</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="text-wrap" style="max-width: 300px;">
+                                    @appt.ApptReason
+                                </div>
+                            </td>
+                            <td>
+                                @if (appt.ApptDate > DateTime.Now)
+                                {
+                                    <span class="badge bg-primary">Upcoming</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Past</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("EditVetAppointment", "AdminDashboard", new { id = appt.Id })" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteAppointment(@appt.Id)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteAppointment(id) {
+            if (confirm('Are you sure you want to delete this appointment?')) {
+                const form = document.getElementById('deleteForm');
+                form.action = `/AdminDashboard/DeleteVetAppointment/${id}`;
+                form.submit();
+            }
+        }
+    </script>
+}

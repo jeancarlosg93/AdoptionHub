@@ -35,6 +35,7 @@ namespace AdoptionHub.Controllers
             var pet = _context.Pets.Include(pet => pet.Details)
                 .Where(p => p.Id == petId)
                 .Include(p => p.Vetappointments)
+                .ThenInclude(v =>v.Vet)
                 .Include(p => p.Petimages)
                 .FirstOrDefault();
 
@@ -47,11 +48,27 @@ namespace AdoptionHub.Controllers
                 model.Gender = pet.Details.Gender;
                 model.Temperament = pet.Details.Temperament;
 
-                foreach (var appointment in pet.Vetappointments)
+                foreach (var appointment in pet.Vetappointments.OrderByDescending(v => v.ApptDate))
                 {
-                    model.AddAppointment(appointment.ApptDate, appointment.ApptReason);
-                }
+                    string vetName = "N/A";
+                    string vetPhone = "N/A";
+                    string vetEmail = "N/A";
 
+                    if (appointment.Vet != null)
+                    {
+                        vetName = $"Dr. {appointment.Vet.FirstName} {appointment.Vet.LastName}".Trim();
+                        vetPhone = appointment.Vet.PhoneNumber ?? "N/A";
+                        vetEmail = appointment.Vet.Email ?? "N/A";
+                    }
+
+                    model.AddAppointment(
+                        appointment.ApptDate,
+                        appointment.ApptReason ?? "Not specified",
+                        vetName,
+                        vetPhone,
+                        vetEmail
+                    );
+                }
                 foreach (var image in pet.Petimages)
                 {
                     model.ImageUrl.Add(image.ImageUrl);
