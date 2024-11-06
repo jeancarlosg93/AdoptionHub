@@ -184,7 +184,6 @@ namespace AdoptionHub.Controllers
                 pet.Petimages.Add(new Petimage() { ImageUrl = imageUrl });
             }
 
-
             return View(pet);
         }
 
