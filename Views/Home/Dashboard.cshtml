@@ -1,83 +1,90 @@
 ﻿@{
-    ViewData["Title"] = "Home Dashboard";
+ViewData["Title"] = "Home Dashboard";
 }
 
 <div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col-3 filter-section">
-            FILTER SEARCH
-            <form id="filter-form">
-                <div>
-                    <label for="species-select">Find your best match!</label>
-                    <select name="species" id="species-select">
-                        <option value="">Any</option>
-                        <option value="dog">Dog</option>
-                        <option value="cat">Cat</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="breed-select">BREED</label>
-                    <select name="breed" id="breed-select">
-                        <option value="">Any</option>
-                        <option value="German Shepherd">German Shepherd</option>
-                        <option value="Golden Retriever">Golden Retriever</option>
-                        <option value="Labrador">Labrador</option>
-                        <option value="Bulldog">Bulldog</option>
-                        <option value="Mixed breed">Mixed breed</option>
-                        <option value="Siamese">Siamese</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="age-select">AGE</label>
-                    <select name="age" id="age-select">
-                        <option value="">Any</option>
-                        <option value="puppy">Puppy</option>
-                        <option value="young">Young</option>
-                        <option value="adult">Adult</option>
-                        <option value="senior">Senior</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="size-select">SIZE</label>
-                    <select name="size" id="size-select">
-                        <option value="">Any</option>
-                        <option value="small">Small</option>
-                        <option value="medium">Medium</option>
-                        <option value="large">Large</option>
-                        <option value="extra large">Extra Large</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="gender-select">GENDER</label>
-                    <select name="gender" id="gender-select">
-                        <option value="">Any</option>
-                        <option value="f">Female</option>
-                        <option value="m">Male</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
+    <div class="row text-center">
+        <h3 class="display-3 mb-4 align-content-center">Find your best match!</h3>
+        
+    </div>
 
-        <div class="col-9">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <a class="btn btn-outline-custom w-100" href="@Url.Action("Index", "Home")">Go Back</a>
+    <div class="row mb-4">
+        <div class="col-3">
+            <div class="card shadow-sm">
+                <div class="card-header"><strong> Filter by:</strong></div>
+                <div class="card-body">
+
+
+                    <form id="filter-form">
+                        <div class="mb-3">
+                            <label for="species-select" class="form-label fw-semibold">Species</label>
+                            <select name="species" id="species-select" class="form-select">
+                                <option value="">Any</option>
+                                <option value="dog">Dog</option>
+                                <option value="cat">Cat</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="breed-select" class="form-label fw-semibold">Breed</label>
+                            <select name="breed" id="breed-select" class="form-select">
+                                <option value="">Any</option>
+                                <option value="German Shepherd">German Shepherd</option>
+                                <option value="Golden Retriever">Golden Retriever</option>
+                                <option value="Labrador">Labrador</option>
+                                <option value="Bulldog">Bulldog</option>
+                                <option value="Mixed breed">Mixed breed</option>
+                                <option value="Siamese">Siamese</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="age-select" class="form-label fw-semibold">Age</label>
+                            <select name="age" id="age-select" class="form-select">
+                                <option value="">Any</option>
+                                <option value="puppy">Puppy</option>
+                                <option value="young">Young</option>
+                                <option value="adult">Adult</option>
+                                <option value="senior">Senior</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="size-select" class="form-label fw-semibold">Size</label>
+                            <select name="size" id="size-select" class="form-select">
+                                <option value="">Any</option>
+                                <option value="small">Small</option>
+                                <option value="medium">Medium</option>
+                                <option value="large">Large</option>
+                                <option value="extra large">Extra Large</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="gender-select" class="form-label fw-semibold">Gender</label>
+                            <select name="gender" id="gender-select" class="form-select">
+                                <option value="">Any</option>
+                                <option value="f">Female</option>
+                                <option value="m">Male</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </form>
                 </div>
             </div>
+        </div>
+
+        <!-- Pets Grid Section -->
+        <div class="col-9 ">
             @if (ViewBag.NoPetsFoundMessage != null)
             {
                 <div class="alert alert-warning">
                     @ViewBag.NoPetsFoundMessage
                 </div>
             }
-            <div class="row">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-3 row-cols-xxl-4 g-4">
                 @if (Model.Count > 0)
                 {
                     @foreach (var pet in Model)
                     {
-                        <div class="col-auto m-2 mb-2">
-                            <div class="hvr-grow card shadow-sm h-100" style="width: 18rem;">
+                        <div class="col-auto">
+                            <div class="hvr-grow card shadow-sm h-100" style="width: 15rem;">
                                 <div class="ratio ratio-4x3">
                                     <img src="@pet.ImageUrl" class="card-img-top object-fit-cover" alt="Image of @pet.Name">
                                 </div>
@@ -85,19 +92,17 @@
                                     <h4 class="card-title">@pet.Name</h4>
                                     <p class="card-text">@pet.Temperament</p>
                                 </div>
-
-                                <ul class="list-group list-group-flush ">
+                                <ul class="list-group list-group-flush">
                                     <li class="list-group-item">Gender: @pet.Gender</li>
-                                    <li class="list-group-item"> Age: @pet.AgeCategory</li>
+                                    <li class="list-group-item">Age: @pet.AgeCategory</li>
                                 </ul>
                                 <div class="card-body d-flex justify-content-center">
-                                    <a href="@Url.Action("Details", "Home", new { id = pet.Id })" class="btn btn-outline-dark">View more details</a>
+                                    <a href="@Url.Action("Details", "Home", new { id = pet.Id })" class="btn btn-outline-dark w-100">View more details</a>
                                 </div>
                             </div>
                         </div>
                     }
                 }
-
             </div>
         </div>
     </div>

@@ -1,7 +1,7 @@
 ﻿@model List<AdoptionHub.Models.Pet>
 
-<div class="container-fluid p-5">
-    <a href="@Url.Action("Index", "AdminDashboard")" class="btn btn-outline-dark btn-sm mb-3">
+<div class="container p-5">
+    <a href="@Url.Action("Index", "AdminDashboard")" class="btn btn-outline-dark btn-sm mb-2">
         <i class="bi-arrow-left"></i> Back
     </a>
 
@@ -24,57 +24,121 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
 
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle text-center mb-0">
-                <thead class="align-middle bg-light">
-                <tr>
-                    <th>Name</th>
-                    <th>Foster Parent</th>
-                    <th>Species</th>
-                    <th>Breed</th>
-                    <th>Date of Birth</th>
-                    <th>Gender</th>
-                    <th>Weight (kg)</th>
-                    <th>Color</th>
-                    <th>Temperament</th>
-                    <th>Date Arrived</th>
-                    <th>Bio</th>
-                    <th>Status</th>
-                    <th>Adoption Fee</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                @foreach (var pet in Model)
-                {
-                    <tr>
-                        <td class="fw-semibold">@pet.Details.Name</td>
-                        <td>
-                            @(pet.CurrentFosterAssignment?.Foster != null ? pet.CurrentFosterAssignment?.Foster.FullName : "Not fostered")
-                        </td>
-                        <td>@pet.Details.Species</td>
-                        <td>@pet.Details.Breed</td>
-                        <td>@pet.Details.DateOfBirth?.ToString("yyyy-MM-dd")</td>
-                        <td>@pet.Details.Gender</td>
-                        <td>@pet.Details.Weight</td>
-                        <td>@pet.Details.Color</td>
-                        <td>@pet.Details.Temperament</td>
-                        <td>@pet.Details.DateArrived?.ToString("yyyy-MM-dd")</td>
-                        <td class="text-truncate" style="max-width: 150px;">@pet.Details.Bio</td>
-                        <td>@pet.Status</td>
-                        <td>@pet.Details.AdoptionFee?.ToString("C")</td>
-                        <td>
-                            <a href="@Url.Action("EditPet", "AdminDashboard", new { id = pet.Id })"
-                               class="btn btn-outline-primary">
-                                <i class="bi-pencil me-1"></i>Edit
-                            </a>
-                        </td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        </div>
+    <div class="row">
+        @foreach (var pet1 in Model)
+        {
+            if (pet1.Status != "adopted")
+            {
+                <div class="col-auto mb-4">
+                    <div class="hvr-grow card shadow-sm" style="width: 18rem;">
+                        <div class="card-header">
+
+                            @if (pet1.Status == "Available")
+                            {
+                                <span class="col-12 badge bg-primary">@pet1.Status</span>
+                            }
+                            else
+                            {
+                                <span class="col-12 badge bg-success">@pet1.Status</span>
+                            }
+                        </div>
+
+                        <div class="card-body">
+                            <h4 class="card-title align-top">@pet1.Details.Name</h4>
+                            <p class="card-subtitle">@pet1.Details.Species</p>
+                        </div>
+                        <ul class="list-group list-group-flush ">
+                            @if (pet1.Details.Gender == "M")
+                            {
+                                <li class="list-group-item">Male</li>
+                            }
+                            else
+                            {
+                                <li class="list-group-item">Female</li>
+                            }
+                            <li class="list-group-item">@pet1.Details.Weight kg</li>
+                            <li class="list-group-item">@pet1.Details.Color</li>
+
+
+                            @if (pet1.Appointments.Count != 0)
+                            {
+                                <li class="list-group-item">
+                                    Vet Appointments:
+                                    <span class="badge bg-danger">@pet1.Vetappointments.Count</span>
+                                </li>
+                            }
+
+
+                        </ul>
+                        
+
+                        <div class="card-footer text-body-secondary text-center">
+                            Date Arrived: @pet1.Details.DateArrived<br/>
+
+                            <div class="d-flex justify-content-center py-2 px-1">
+                                <a href="@Url.Action("EditPet", "AdminDashboard", new { id = pet1.Id })"
+                                   class="btn btn-outline-primary w-100">
+                                    <i class="bi-pencil me-1"></i>Edit
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            }
+        }
     </div>
+    @*
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle text-center mb-0">
+            <thead class="align-middle bg-light">
+            <tr>
+                <th>Name</th>
+                <th>Foster Parent</th>
+                <th>Species</th>
+                <th>Breed</th>
+                <th>Date of Birth</th>
+                <th>Gender</th>
+                <th>Weight (kg)</th>
+                <th>Color</th>
+                <th>Temperament</th>
+                <th>Date Arrived</th>
+                <th>Bio</th>
+                <th>Status</th>
+                <th>Adoption Fee</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            @foreach (var pet in Model)
+            {
+                <tr>
+                    <td class="fw-semibold">@pet.Details.Name</td>
+                    <td>
+                        @(pet.CurrentFosterAssignment?.Foster != null ? pet.CurrentFosterAssignment?.Foster.FullName : "Not fostered")
+                    </td>
+                    <td>@pet.Details.Species</td>
+                    <td>@pet.Details.Breed</td>
+                    <td>@pet.Details.DateOfBirth?.ToString("yyyy-MM-dd")</td>
+                    <td>@pet.Details.Gender</td>
+                    <td>@pet.Details.Weight</td>
+                    <td>@pet.Details.Color</td>
+                    <td>@pet.Details.Temperament</td>
+                    <td>@pet.Details.DateArrived?.ToString("yyyy-MM-dd")</td>
+                    <td class="text-truncate" style="max-width: 150px;">@pet.Details.Bio</td>
+                    <td>@pet.Status</td>
+                    <td>@pet.Details.AdoptionFee?.ToString("C")</td>
+                    <td>
+                        <a href="@Url.Action("EditPet", "AdminDashboard", new { id = pet.Id })"
+                           class="btn btn-outline-primary">
+                            <i class="bi-pencil me-1"></i>Edit
+                        </a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>*@
 </div>
