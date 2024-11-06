@@ -167,12 +167,14 @@ namespace AdoptionHub.Controllers
                 return $"{months} month{(months > 1 ? "s" : "")} old";
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            Pet pet = _context.Pets.Include(p => p.Details)
+            var pet = await _context.Pets.Include(p => p.Details)
                     .Include(p => p.Petimages)
-                    .FirstOrDefault(p => p.Id == id);
+                    .FirstOrDefaultAsync(p => p.Id == id);
+            
             pet.Details.Gender = pet.Details.Gender == "F" ? "Female" : "Male";
+            
             ViewData["ExactAge"] = CalculateAge((DateTime)pet.Details.DateOfBirth);
 
             if (pet.Petimages.Count == 0)

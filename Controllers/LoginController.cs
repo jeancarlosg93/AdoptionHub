@@ -36,41 +36,61 @@ public class LoginController : Controller
 
     public async Task<IActionResult> LoginMethod(LoginViewModel model)
     {
-        var user = _context.Users.FirstOrDefault(u => u.Username == model.Username);
+        try
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
 
-        if (user == null)
-        {
-            await _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
-            model.ErrorMessage = "The provided username does not exist";
-            return View("Index", model);
-        }
-        else
-        {
+            if (user == null)
+            {
+                await _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
+                model.ErrorMessage = "Invalid username or password";
+                return View("Index", model);
+            }
+
+
             var hashedPassword = HashPassword(model.Password, user.Salt);
+
             if (user.Password != hashedPassword)
             {
                 await _logInLogService.UpdateLogRegistry($"userName: {model.Username}, result: Unsuccessful login");
-                model.ErrorMessage = "The provided password is incorrect";
+                model.ErrorMessage = "Invalid username or password";
                 return View("Index", model);
             }
+
             HttpContext.Session.SetString("userName", user.Username);
             HttpContext.Session.SetString("userRole", user.UserRole);
             HttpContext.Session.SetString("IsAuthenticated", "Y");
-            if (user.UserRole == "admin")
-            {
-                await _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
-                HttpContext.Session.SetString("IsAdmin", "Y");
-                return RedirectToAction("Index", "AdminDashboard");
-            }
 
-            if (user.UserRole == "foster")
+            switch (user.UserRole)
             {
-                await _logInLogService.UpdateLogRegistry("userName: " + model.Username + ", result: Successful login");
-                HttpContext.Session.SetString("IsFoster", "Y");
-                return RedirectToAction("Index", "FosterDashboard");
+                case "admin":
+                {
+                    await _logInLogService.UpdateLogRegistry("userName: " + model.Username +
+                                                             ", result: Successful login");
+                    HttpContext.Session.SetString("IsAdmin", "Y");
+                    return RedirectToAction("Index", "AdminDashboard");
+                }
+
+                case "foster":
+                {
+                    await _logInLogService.UpdateLogRegistry("userName: " + model.Username +
+                                                             ", result: Successful login");
+                    HttpContext.Session.SetString("IsFoster", "Y");
+                    return RedirectToAction("Index", "FosterDashboard");
+                }
+
+                default:
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
         }
-        return View("Index", model);
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while login attempt for user {Username}", model.Username);
+            model.ErrorMessage = "An error occured while logging in please try again";
+            return View("Index", model);
+        }
     }
 
     [HttpGet]
@@ -110,7 +130,6 @@ public class LoginController : Controller
 
             var salt = GenerateSalt();
             var hashedPassword = HashPassword(model.User.Password, salt);
-
 
 
             var newUser = new User
@@ -163,11 +182,9 @@ public class LoginController : Controller
     }
 
 
-
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
-
 }
