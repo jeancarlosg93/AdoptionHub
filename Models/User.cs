@@ -25,7 +25,6 @@ public partial class User
 
     public string UserRole { get; set; } = null!;
 
-    public virtual ICollection<Adoptionapplication> Adoptionapplications { get; set; } = new List<Adoptionapplication>();
 
     public virtual ICollection<Appointment> AppointmentCreatedByUsers { get; set; } = new List<Appointment>();
 

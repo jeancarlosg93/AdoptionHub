@@ -100,6 +100,7 @@ public partial class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.FosterUserId, "fosterUserId");
 
             entity.HasIndex(e => e.PetId, "petId");
+            entity.HasIndex(e => e.PetId, "petId");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AppointmentDate)
