@@ -1,0 +1,133 @@
+﻿@model VetAppointmentViewModel
+
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Create Appointment" : "Edit Appointment";
+}
+
+<div class="container p-4">
+    <div class="mb-4">
+        <a class="btn btn-secondary" href="@Url.Action("VetAppointments", "AdminDashboard")">
+            <i class="bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <h1 class="display-4 mb-4">@(Model.Id == 0 ? "Create New Appointment" : "Edit Appointment")</h1>
+
+    <form asp-action="EditVetAppointment" method="post">
+        <input type="hidden" asp-for="Id" />
+        
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Main Form Card -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">Appointment Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Pet Selection -->
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="PetId" class="form-label">Pet</label>
+                                    <select asp-for="PetId" class="form-select">
+                                        <option value="">Select a pet</option>
+                                        @foreach (var pet in Model.AvailablePets)
+                                        {
+                                            <option value="@pet.Id">@pet.Details?.Name (@pet.Details?.Species - @pet.Details?.Breed)</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="PetId" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Veterinarian Selection -->
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="VetId" class="form-label">Veterinarian</label>
+                                    <select asp-for="VetId" class="form-select">
+                                        <option value="">Select a veterinarian</option>
+                                        @foreach (var vet in Model.AvailableVets)
+                                        {
+                                            <option value="@vet.Id">Dr. @vet.FirstName @vet.LastName (@vet.PhoneNumber)</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="VetId" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Appointment Date and Time -->
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="ApptDate" class="form-label">Appointment Date & Time</label>
+                                    <input asp-for="ApptDate" type="datetime-local" class="form-control" />
+                                    <span asp-validation-for="ApptDate" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Appointment Reason -->
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="ApptReason" class="form-label">Appointment Reason</label>
+                                    <textarea asp-for="ApptReason" class="form-control" rows="3" style="resize: vertical;"></textarea>
+                                    <span asp-validation-for="ApptReason" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-action="VetAppointments" class="btn btn-danger btn-lg">
+                        <i class="bi bi-x-circle me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-check-circle me-2"></i>Save
+                    </button>
+                </div>
+            </div>
+
+            <!-- Side Panel -->
+            <div class="col-md-4">
+                @if (Model.Pet != null)
+                {
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">Pet Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>@Model.Pet.Details?.Name</h6>
+                            <p class="mb-2">@Model.Pet.Details?.Species - @Model.Pet.Details?.Breed</p>
+                            <p class="text-muted mb-0">Status: @Model.Pet.Status</p>
+                            @if (Model.Pet.CurrentFosterAssignment?.Foster != null)
+                            {
+                                <hr/>
+                                <small class="text-muted">Current Foster:</small>
+                                <p class="mb-0">@Model.Pet.CurrentFosterAssignment.Foster.FullName</p>
+                                <p class="mb-0"><i class="bi bi-telephone me-2"></i>@Model.Pet.CurrentFosterAssignment.Foster.PhoneNumber</p>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (Model.Vet != null)
+                {
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">Veterinarian Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Dr. @Model.Vet.FirstName @Model.Vet.LastName</h6>
+                            <p class="mb-1"><i class="bi bi-telephone me-2"></i>@Model.Vet.PhoneNumber</p>
+                            <p class="mb-0"><i class="bi bi-envelope me-2"></i>@Model.Vet.Email</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
