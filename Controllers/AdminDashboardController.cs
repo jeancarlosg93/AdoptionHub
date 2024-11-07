@@ -170,6 +170,20 @@ public class AdminDashboardController : Controller
         return View(model);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeletePet(int id)
+    {
+        var pet = await _context.Pets.FindAsync(id);
+        if (pet == null)
+        {
+            return NotFound();
+        }
+        _context.Pets.Remove(pet);
+        await _context.SaveChangesAsync();
+        return RedirectToAction("EditPets");
+    }
+
     [HttpGet]
 
     public async Task<IActionResult> ManageApplications()
@@ -290,97 +304,97 @@ public class AdminDashboardController : Controller
         return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"ListOfPets{date}.csv");
     }
 
-    
-public async Task<IActionResult> VetAppointments()
-{
-    var appointments = await _context.Vetappointments
-        .Include(v => v.Pet)
-            .ThenInclude(p => p.Details)
-        .Include(v => v.Vet)
-        .OrderByDescending(v => v.ApptDate)
-        .ToListAsync();
-    
-    return View(appointments);
-}
 
-[HttpGet]
-public async Task<IActionResult> EditVetAppointment(int? id)
-{
-    var viewModel = new VetAppointmentViewModel
+    public async Task<IActionResult> VetAppointments()
     {
-        AvailablePets = await _context.Pets.Include(p => p.Details).ToListAsync(),
-        AvailableVets = await _context.Veterinarians.ToListAsync()
-    };
-
-    if (id.HasValue)
-    {
-        var appointment = await _context.Vetappointments
+        var appointments = await _context.Vetappointments
             .Include(v => v.Pet)
+                .ThenInclude(p => p.Details)
             .Include(v => v.Vet)
-            .FirstOrDefaultAsync(v => v.Id == id);
+            .OrderByDescending(v => v.ApptDate)
+            .ToListAsync();
 
-        if (appointment != null)
-        {
-            viewModel.Id = appointment.Id;
-            viewModel.PetId = appointment.PetId;
-            viewModel.VetId = appointment.VetId;
-            viewModel.ApptDate = appointment.ApptDate;
-            viewModel.ApptReason = appointment.ApptReason;
-            viewModel.Pet = appointment.Pet;
-            viewModel.Vet = appointment.Vet;
-        }
+        return View(appointments);
     }
 
-    return View(viewModel);
-}
-
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> EditVetAppointment(VetAppointmentViewModel model)
-{
-    if (ModelState.IsValid)
+    [HttpGet]
+    public async Task<IActionResult> EditVetAppointment(int? id)
     {
-        Vetappointment appointment;
-        if (model.Id == 0)
+        var viewModel = new VetAppointmentViewModel
         {
-            appointment = new Vetappointment();
-            await _context.Vetappointments.AddAsync(appointment);
-        }
-        else
+            AvailablePets = await _context.Pets.Include(p => p.Details).ToListAsync(),
+            AvailableVets = await _context.Veterinarians.ToListAsync()
+        };
+
+        if (id.HasValue)
         {
-            appointment = await _context.Vetappointments.FindAsync(model.Id);
-            if (appointment == null)
+            var appointment = await _context.Vetappointments
+                .Include(v => v.Pet)
+                .Include(v => v.Vet)
+                .FirstOrDefaultAsync(v => v.Id == id);
+
+            if (appointment != null)
             {
-                return NotFound();
+                viewModel.Id = appointment.Id;
+                viewModel.PetId = appointment.PetId;
+                viewModel.VetId = appointment.VetId;
+                viewModel.ApptDate = appointment.ApptDate;
+                viewModel.ApptReason = appointment.ApptReason;
+                viewModel.Pet = appointment.Pet;
+                viewModel.Vet = appointment.Vet;
             }
         }
 
-        appointment.PetId = model.PetId;
-        appointment.VetId = model.VetId;
-        appointment.ApptDate = model.ApptDate;
-        appointment.ApptReason = model.ApptReason;
+        return View(viewModel);
+    }
 
-        await _context.SaveChangesAsync();
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditVetAppointment(VetAppointmentViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            Vetappointment appointment;
+            if (model.Id == 0)
+            {
+                appointment = new Vetappointment();
+                await _context.Vetappointments.AddAsync(appointment);
+            }
+            else
+            {
+                appointment = await _context.Vetappointments.FindAsync(model.Id);
+                if (appointment == null)
+                {
+                    return NotFound();
+                }
+            }
+
+            appointment.PetId = model.PetId;
+            appointment.VetId = model.VetId;
+            appointment.ApptDate = model.ApptDate;
+            appointment.ApptReason = model.ApptReason;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(VetAppointments));
+        }
+
+        // If we got this far, something failed, redisplay form
+        model.AvailablePets = await _context.Pets.Include(p => p.Details).ToListAsync();
+        model.AvailableVets = await _context.Veterinarians.ToListAsync();
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteVetAppointment(int id)
+    {
+        var appointment = await _context.Vetappointments.FindAsync(id);
+        if (appointment != null)
+        {
+            _context.Vetappointments.Remove(appointment);
+            await _context.SaveChangesAsync();
+        }
         return RedirectToAction(nameof(VetAppointments));
     }
-
-    // If we got this far, something failed, redisplay form
-    model.AvailablePets = await _context.Pets.Include(p => p.Details).ToListAsync();
-    model.AvailableVets = await _context.Veterinarians.ToListAsync();
-    return View(model);
-}
-
-[HttpPost]
-public async Task<IActionResult> DeleteVetAppointment(int id)
-{
-    var appointment = await _context.Vetappointments.FindAsync(id);
-    if (appointment != null)
-    {
-        _context.Vetappointments.Remove(appointment);
-        await _context.SaveChangesAsync();
-    }
-    return RedirectToAction(nameof(VetAppointments));
-}
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
