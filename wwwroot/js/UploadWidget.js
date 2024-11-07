@@ -6,9 +6,9 @@ const myWidget = cloudinary.createUploadWidget(
         cloudName: cloudName,
         uploadPreset: uploadPreset,
         cropping: true, 
-        croppingAspectRatio: 0.8, 
+        croppingAspectRatio: 1.25, 
         croppingShowDimensions: true, 
-        croppingDefaultSelectionRatio: 0.8, 
+        croppingDefaultSelectionRatio: 1.25, 
         showSkipCropButton: false, 
         multiple: false,
         sources: ["local"],
@@ -17,6 +17,7 @@ const myWidget = cloudinary.createUploadWidget(
     },
     (error, result) => {
         if (!error && result && result.event === "success") {
+            console.log(result);
             // Create a hidden input to store the URL
             const input = document.createElement('input');
             input.type = 'hidden';
