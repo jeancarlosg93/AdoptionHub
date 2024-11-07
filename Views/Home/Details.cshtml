@@ -91,17 +91,11 @@
                         <p class="card-text">@Model.Details.Temperament</p>
                     </div>
 
-                    @* <div class="d-grid gap-2">
-                        <button class="btn btn-primary btn-lg">Start Adoption Process</button>
-                        <a href="@Url.Action("Dashboard", "Home")" class="btn btn-outline-secondary">
-                            Back to Available Pets
-                        </a>
-                    </div> *@
                     <div class="d-grid gap-2">
                         <a href="@Url.Action("Form", "Adoption", new { petId = Model.Details.Id })" class="btn btn-outline-primary btn-lg">
                             Start Adoption Process
                         </a>
-                        <a href="@Url.Action("Details", "Pets")" class="btn btn-outline-secondary">
+                        <a href="@Url.Action("Dashboard", "Home")" class="btn btn-outline-secondary">
                             Back to Available Pets
                         </a>
                     </div>

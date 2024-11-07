@@ -38,6 +38,7 @@ public class AdoptionFormViewModel
     public string PhoneNumber { get; set; }
 
     [Display(Name = "Comments")]
-    [StringLength(100)] public string Comments { get; set; }
+    [StringLength(100)] 
+    public string? Comments { get; set; }
 
 }
