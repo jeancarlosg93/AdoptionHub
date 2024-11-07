@@ -345,35 +345,43 @@ public partial class ApplicationDbContext : DbContext
         modelBuilder.Entity<Vetappointment>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
-
             entity.ToTable("vetappointments");
 
-            entity.HasIndex(e => e.FosterId, "FK_VetAppointments_FosterId");
-
             entity.HasIndex(e => e.PetId, "FK_VetAppointments_PetId");
-
             entity.HasIndex(e => e.VetId, "FK_VetAppointments_VetId");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ApptDate).HasColumnName("apptDate");
+    
+            entity.Property(e => e.ApptDate)
+                .IsRequired()
+                .HasColumnType("datetime")  // This ensures both date and time are stored
+                .HasColumnName("apptDate");
+    
             entity.Property(e => e.ApptReason)
                 .HasMaxLength(200)
                 .HasColumnName("apptReason");
-            entity.Property(e => e.FosterId).HasColumnName("fosterId");
-            entity.Property(e => e.IsFostered).HasColumnName("isFostered");
-            entity.Property(e => e.PetId).HasColumnName("petId");
-            entity.Property(e => e.VetId).HasColumnName("vetId");
+    
+            entity.Property(e => e.PetId)
+                .IsRequired()
+                .HasColumnName("petId");
+    
+            entity.Property(e => e.VetId)
+                .IsRequired()
+                .HasColumnName("vetId");
 
-            entity.HasOne(d => d.Foster).WithMany(p => p.Vetappointments)
-                .HasForeignKey(d => d.FosterId)
-                .HasConstraintName("FK_VetAppointments_FosterId");
-
-            entity.HasOne(d => d.Pet).WithMany(p => p.Vetappointments)
+            // Configure the required relationships
+            entity.HasOne(d => d.Pet)
+                .WithMany(p => p.Vetappointments)
                 .HasForeignKey(d => d.PetId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired()
                 .HasConstraintName("FK_VetAppointments_PetId");
 
-            entity.HasOne(d => d.Vet).WithMany(p => p.Vetappointments)
+            entity.HasOne(d => d.Vet)
+                .WithMany(p => p.Vetappointments)
                 .HasForeignKey(d => d.VetId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired()
                 .HasConstraintName("FK_VetAppointments_VetId");
         });
 

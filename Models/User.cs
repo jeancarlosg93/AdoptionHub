@@ -33,8 +33,6 @@ public partial class User
     public virtual ICollection<Fosterassignment> Fosterassignments { get; set; } = new List<Fosterassignment>();
 
     public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();
-
-    public virtual ICollection<Vetappointment> Vetappointments { get; set; } = new List<Vetappointment>();
-
+    
     public string FullName => $"{FirstName} {LastName}".Trim();
 }
