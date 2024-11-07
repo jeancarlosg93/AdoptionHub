@@ -2,6 +2,8 @@
 using AdoptionHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 
 namespace AdoptionHub.Controllers
 {
@@ -22,47 +24,60 @@ namespace AdoptionHub.Controllers
             return View();
         }
 
-        //public IActionResult Form(int petId)
-        //{
-        //    var model = new AdoptionFormViewModel();
-        //    ViewBag.PetId = petId;
-        //    return View(model);
-        //}
+        [Route("Adoption/Form")]
         public IActionResult Form(int petId)
         {
-            var model = new AdoptionFormViewModel { PetId = petId };
+            var pet = _context.Pets.FirstOrDefault(p => p.Id == petId);
+            if (pet == null)
+            {
+                return NotFound();
+            }
+
+            var model = new AdoptionFormViewModel
+            {
+                PetId = petId
+            };
             return View(model);
         }
 
-
+        
         [HttpPost]
         public IActionResult SubmitApplication(AdoptionFormViewModel model)
         {
-            var pet = _context.Adoptionapplications.FirstOrDefault(p => p.Id == model.PetId);
-
-            if (pet == null)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Pet not found.");
+                var adoptionApplication = new Adoptionapplication
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    Address = model.Address,
+                    City = model.City,
+                    Province = model.Province,
+                    Country = model.Country,
+                    PhoneNumber = model.PhoneNumber,
+                    Comments = model.Comments,
+                    PetId = model.PetId,
+                    ApplicationDateTime = DateTime.Now,
+                    ApplicationStatus = "Pending"  // default status
+                };
+
+                _context.Adoptionapplications.Add(adoptionApplication);
+                _context.SaveChanges();
+
+                TempData["SuccessMessage"] = "Thanks for your submission!";
+
                 return View("Form", model);
             }
 
-            var adoptionApplication = new Adoptionapplication
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email,
-                Address = model.Address,
-                PhoneNumber = model.PhoneNumber,
-                Comments = model.Comments,
-                PetId = model.PetId,
-                ApplicationDateTime = DateTime.Now,
-                ApplicationStatus = "Pending"  //default status
-            };
+            return View("Form", model);
+        }
 
-            _context.Adoptionapplications.Add(adoptionApplication);
-            _context.SaveChanges();
 
-            return RedirectToAction("ApplicationConfirmation", new { id = adoptionApplication.Id });
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
