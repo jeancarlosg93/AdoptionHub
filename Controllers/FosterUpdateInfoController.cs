@@ -99,7 +99,7 @@ namespace AdoptionHub.Controllers
                 _context.Petimages.Add(petImage);
             }
 
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return RedirectToAction("Index", "FosterDashboard");
         }
