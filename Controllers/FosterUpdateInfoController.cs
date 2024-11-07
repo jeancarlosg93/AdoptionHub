@@ -5,6 +5,8 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 
 namespace AdoptionHub.Controllers
 {
@@ -97,7 +99,7 @@ namespace AdoptionHub.Controllers
                 _context.Petimages.Add(petImage);
             }
 
-            _context.SaveChanges();
+            _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "FosterDashboard");
         }
@@ -112,6 +114,16 @@ namespace AdoptionHub.Controllers
                 {
                     return Json(new { success = false, message = "Image not found" });
                 }
+                
+                string imageToDelete = ExtractImageId(image.ImageUrl);
+                
+                var deleteParams = new DelResParams(){
+                    PublicIds = new List<string>{imageToDelete},
+                    Type = "upload",
+                    ResourceType = ResourceType.Image};
+                
+                var result = _cloudinary.DeleteResources(deleteParams);
+                Console.WriteLine(result.JsonObj);
 
                 _context.Petimages.Remove(image);
                 _context.SaveChanges();
@@ -123,6 +135,15 @@ namespace AdoptionHub.Controllers
                 Console.WriteLine(e);
                 return Json(new { success = false, message = e.Message });
             }
+        }
+
+        public string ExtractImageId(string imageUrl)
+        {
+            if (string.IsNullOrEmpty(imageUrl))
+                return string.Empty;
+            string[] parts = imageUrl.Split('/');
+            string lastPart = parts[parts.Length - 1];
+            return Path.GetFileNameWithoutExtension(lastPart);
         }
     }
 }
