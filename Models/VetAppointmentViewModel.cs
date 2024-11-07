@@ -7,13 +7,13 @@ namespace AdoptionHub.Models
         public int Id { get; set; }
         
         [Required(ErrorMessage = "Pet selection is required")]
-        public int? PetId { get; set; }
+        public int PetId { get; set; }
         
         [Required(ErrorMessage = "Veterinarian selection is required")]
-        public int? VetId { get; set; }
+        public int VetId { get; set; }
         
         [Required(ErrorMessage = "Appointment date is required")]
-        public DateTime? ApptDate { get; set; }
+        public DateTime ApptDate { get; set; }
         
         [Required(ErrorMessage = "Appointment reason is required")]
         [StringLength(200)]

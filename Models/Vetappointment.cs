@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AdoptionHub.Models;
 
@@ -7,21 +8,39 @@ public partial class Vetappointment
 {
     public int Id { get; set; }
 
-    public int? PetId { get; set; }
+    [Required]
+    public int PetId { get; set; }
 
-    public int? VetId { get; set; }
+    [Required]
+    public int VetId { get; set; }
 
-    public bool? IsFostered { get; set; }
+    [Required]
+    [Column(TypeName = "datetime")]
+    [Display(Name = "Appointment Date and Time")]
+    // Validate that appointment date is not in the past
+    [FutureDate(ErrorMessage = "Appointment date must be in the future")]
+    public DateTime ApptDate { get; set; }
 
-    public int? FosterId { get; set; }
-
-    public DateTime? ApptDate { get; set; }
-
+    [MaxLength(200)]
+    [Display(Name = "Appointment Reason")]
     public string? ApptReason { get; set; }
 
-    public virtual User? Foster { get; set; }
+    [ForeignKey("PetId")]
+    public virtual Pet Pet { get; set; } = null!;
 
-    public virtual Pet? Pet { get; set; }
+    [ForeignKey("VetId")]
+    public virtual Veterinarian Vet { get; set; } = null!;
+}
 
-    public virtual Veterinarian? Vet { get; set; }
+// Custom validation attribute to ensure appointment dates are in the future
+public class FutureDateAttribute : ValidationAttribute
+{
+    public override bool IsValid(object? value)
+    {
+        if (value is DateTime dateTime)
+        {
+            return dateTime > DateTime.Now;
+        }
+        return false;
+    }
 }

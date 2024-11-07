@@ -493,8 +493,8 @@ namespace AdoptionHub.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("ApptDate")
-                        .HasColumnType("datetime(6)")
+                    b.Property<DateTime>("ApptDate")
+                        .HasColumnType("datetime")
                         .HasColumnName("apptDate");
 
                     b.Property<string>("ApptReason")
@@ -502,26 +502,16 @@ namespace AdoptionHub.Migrations
                         .HasColumnType("varchar(200)")
                         .HasColumnName("apptReason");
 
-                    b.Property<int?>("FosterId")
-                        .HasColumnType("int")
-                        .HasColumnName("fosterId");
-
-                    b.Property<bool?>("IsFostered")
-                        .HasColumnType("tinyint(1)")
-                        .HasColumnName("isFostered");
-
-                    b.Property<int?>("PetId")
+                    b.Property<int>("PetId")
                         .HasColumnType("int")
                         .HasColumnName("petId");
 
-                    b.Property<int?>("VetId")
+                    b.Property<int>("VetId")
                         .HasColumnType("int")
                         .HasColumnName("vetId");
 
                     b.HasKey("Id")
                         .HasName("PRIMARY");
-
-                    b.HasIndex(new[] { "FosterId" }, "FK_VetAppointments_FosterId");
 
                     b.HasIndex(new[] { "PetId" }, "FK_VetAppointments_PetId");
 
@@ -673,22 +663,19 @@ namespace AdoptionHub.Migrations
 
             modelBuilder.Entity("AdoptionHub.Models.Vetappointment", b =>
                 {
-                    b.HasOne("AdoptionHub.Models.User", "Foster")
-                        .WithMany("Vetappointments")
-                        .HasForeignKey("FosterId")
-                        .HasConstraintName("FK_VetAppointments_FosterId");
-
                     b.HasOne("AdoptionHub.Models.Pet", "Pet")
                         .WithMany("Vetappointments")
                         .HasForeignKey("PetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("FK_VetAppointments_PetId");
 
                     b.HasOne("AdoptionHub.Models.Veterinarian", "Vet")
                         .WithMany("Vetappointments")
                         .HasForeignKey("VetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("FK_VetAppointments_VetId");
-
-                    b.Navigation("Foster");
 
                     b.Navigation("Pet");
 
@@ -721,8 +708,6 @@ namespace AdoptionHub.Migrations
                     b.Navigation("Fosterassignments");
 
                     b.Navigation("Pets");
-
-                    b.Navigation("Vetappointments");
                 });
 
             modelBuilder.Entity("AdoptionHub.Models.Veterinarian", b =>
