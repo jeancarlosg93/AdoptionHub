@@ -52,4 +52,10 @@ app.MapControllerRoute(
     pattern: "FosterDashboard/{action=Index}/{id?}");
 
 
+app.MapControllerRoute(
+    name: "adopt",
+    pattern: "adopt/{petId}",
+    defaults: new { controller = "Adoption", action = "Form" });
+
+
 app.Run();
